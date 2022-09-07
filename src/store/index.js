@@ -1,5 +1,9 @@
 import { createStore } from "vuex";
 
+export const getterTypes = Object.freeze({
+	SECOND_LENGTH: `secondLength`,
+});
+
 export default createStore({
 	state: {
 		hours: 0,
@@ -24,12 +28,6 @@ export default createStore({
 		},
 	},
 	mutations: {
-		setInterval(state) {
-			state.interval = setInterval(() => {}, 1000);
-		},
-		clearTimeInterval(state) {
-			clearInterval(state.interval);
-		},
 		countSeconds(state) {
 			state.seconds++;
 		},
@@ -39,25 +37,37 @@ export default createStore({
 		countHours(state) {
 			state.hours++;
 		},
-		placeholderSeconds(state) {
-			state.outputseconds = "0" + state.seconds;
+		setOutputSeconds(state, outputseconds) {
+			state.outputseconds = outputseconds;
 		},
-		placeholderMinutes(state) {
-			state.outputminutes = "0" + state.minutes;
+		setOutputMinutes(state, outputminutes) {
+			state.outputminutes = outputminutes;
 		},
-		placeholderHours(state) {
-			state.outputhours = "0" + state.hours;
+		setOutputHours(state, outputhours) {
+			state.outputhours = outputhours;
 		},
+
+		clearSeconds(state) {
+			state.outputseconds = "00";
+			state.seconds = 0;
+		},
+		clearMinutes(state) {
+			state.outputminutes = "00";
+			state.minutes = 0;
+		},
+
+		clearTimeInterval(state) {
+			clearInterval(state.interval);
+		},
+
 		clear(state) {
 			state.outputseconds = "00";
 			state.outputminutes = "00";
 			state.outputhours = "00";
 		},
-		IsRunning(state) {
-			state.isRunning = true;
-		},
-		NotRunning(state) {
-			state.isRunning = false;
+
+		toggleRunning(state) {
+			state.isRunning = !state.isRunning;
 		},
 	},
 	actions: {
@@ -72,13 +82,6 @@ export default createStore({
 		},
 		addPlaceholderSeconds(context) {
 			context.commit("placeholderSeconds");
-		},
-		startStopwatch({ commit, state }) {
-			if (!state.interval) {
-				commit("setInterval", () => {
-					commit("countSeconds");
-				});
-			}
 		},
 	},
 	modules: {},

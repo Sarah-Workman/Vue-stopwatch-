@@ -12,7 +12,9 @@
 	export default {
 		name: "Rectangle",
 
-		computed: mapState(["outputseconds", "outputminutes", "outputhours"]),
+		computed: {
+			...mapState(["outputseconds", "outputminutes", "outputhours"]),
+		},
 	};
 </script>
 <style lang="scss" scoped>

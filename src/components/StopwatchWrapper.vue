@@ -7,13 +7,14 @@
 			@lap="lapBtn"
 			@resetLap="resetLapsBtn"
 		/>
+
 		<Rectangle />
 	</div>
 </template>
 <script>
 	import Buttons from "./Buttons";
 	import Rectangle from "./Rectangle";
-	import { nextTick } from "vue";
+	import { getterTypes } from "../store/index";
 	import { mapState, mapActions, mapMutations, mapGetters } from "vuex";
 
 	export default {
@@ -24,22 +25,48 @@
 		},
 
 		methods: {
+			...mapActions([
+				"incrementSeconds",
+				"addPlaceholderSeconds",
+				"startStopwatch",
+			]),
+			...mapMutations(["countSeconds"]),
 			startBtn() {
-				if (this.secondLength < 2) {
-					this.startStopwatch;
-					this.placeholderSeconds;
-					console.log("inside of startBtn");
-					console.log(this.outputSeconds);
+				if (this.$store.state.isRunning === false) {
+					this.$store.commit("toggleRunning");
+					this.$store.state.interval = setInterval(() => {
+						this.$store.commit("countSeconds");
+						const outputSeconds =
+							this.seconds < 10 ? "0" + this.seconds : this.seconds;
+
+						this.$store.commit("setOutputSeconds", outputSeconds);
+						if (this.$store.state.seconds >= 60) {
+							this.$store.commit("countMinutes");
+							this.$store.commit("clearSeconds");
+
+							const outputminutes =
+								this.minutes < 10 ? "0" + this.minutes : this.minutes;
+							this.$store.commit("setOutputMinutes", outputminutes);
+						} else if (this.$store.state.minutes >= 60) {
+							this.$store.commit("countHours");
+							this.$store.commit("clearMinutes");
+							const outputhours =
+								this.hours < 10 ? "0" + this.hours : this.hours;
+							this.$store.commit("setOutputHours", outputhours);
+						}
+					}, 1000);
 				}
 			},
 			stopBtn() {
+				this.$store.commit("toggleRunning");
 				console.log("stopBtn connected");
-				this.$store.commit("NotRunning");
 				this.$store.commit("clearTimeInterval");
-				this.$store.commit("clear");
 			},
 			resetBtn() {
 				console.log("resetBtn connected");
+				this.$store.commit("toggleRunning");
+				this.$store.commit("clearTimeInterval");
+				this.$store.commit("clear");
 			},
 			lapBtn() {
 				console.log("lapBtn connected");
@@ -48,14 +75,13 @@
 				console.log("resetLapsBtn connected");
 			},
 		},
-		computed: mapState(["seconds", "minutes", "hours", "outputSeconds"]),
-		...mapActions([
-			"incrementSeconds",
-			"addPlaceholderSeconds",
-			"startStopwatch",
-		]),
-		...mapMutations(["countSeconds"]),
-		...mapGetters(["secondLength"]),
+		computed: {
+			...mapState(["seconds", "minutes", "hours", "outputSeconds"]),
+
+			...mapGetters({
+				//secondLength: getterTypes.SECOND_LENGTH
+			}),
+		},
 	};
 </script>
 <style lang="scss" scoped>
