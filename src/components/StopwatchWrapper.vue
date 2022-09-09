@@ -74,6 +74,7 @@
 				this.$store.commit("toggleRunning");
 				this.$store.commit("clearTimeInterval");
 				this.$store.commit("clear");
+				this.$store.commit("clearLaps");
 			},
 			lapBtn() {
 				console.log("lapBtn connected");

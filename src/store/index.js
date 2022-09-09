@@ -9,13 +9,14 @@ export default createStore({
 		hours: 0,
 		minutes: 0,
 		seconds: 0,
+
 		outputseconds: "00",
 		outputminutes: "00",
 		outputhours: "00",
 		laps: [],
 		lapTime: [],
 		isRunning: false,
-		isClicked: true,
+
 		interval: null,
 	},
 	getters: {
@@ -70,9 +71,6 @@ export default createStore({
 
 		toggleRunning(state) {
 			state.isRunning = !state.isRunning;
-		},
-		toggleClicked(state) {
-			state.isClicked = !state.isClicked;
 		},
 
 		createP(state) {

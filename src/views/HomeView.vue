@@ -10,11 +10,6 @@
 		components: {
 			StopWatchWrapper,
 		},
-		computed: {
-			seconds() {
-				return store.state.countSeconds;
-			},
-		},
 	};
 </script>
 <style scoped>
