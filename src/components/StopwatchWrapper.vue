@@ -1,19 +1,25 @@
 <template>
 	<div id="stopwatchContainer">
-		<Buttons
-			@start="startBtn"
-			@stop="stopBtn"
-			@reset="resetBtn"
-			@lap="lapBtn"
-			@resetLap="resetLapsBtn"
-		/>
+		<div id="stopwatchWrapper">
+			<Buttons
+				@start="startBtn"
+				@stop="stopBtn"
+				@reset="resetBtn"
+				@lap="lapBtn"
+				@resetLap="resetLapsBtn"
+			/>
 
-		<Rectangle />
+			<Rectangle />
+		</div>
+
+		<LapContainer />
 	</div>
 </template>
+
 <script>
 	import Buttons from "./Buttons";
 	import Rectangle from "./Rectangle";
+	import LapContainer from "./LapContainer";
 	import { getterTypes } from "../store/index";
 	import { mapState, mapActions, mapMutations, mapGetters } from "vuex";
 
@@ -22,6 +28,7 @@
 		components: {
 			Buttons,
 			Rectangle,
+			LapContainer,
 		},
 
 		methods: {
@@ -70,9 +77,14 @@
 			},
 			lapBtn() {
 				console.log("lapBtn connected");
+
+				if (this.$store.state.isRunning === true) {
+					this.$store.commit("createP");
+				}
 			},
 			resetLapsBtn() {
 				console.log("resetLapsBtn connected");
+				this.$store.commit("clearLaps");
 			},
 		},
 		computed: {
@@ -90,12 +102,17 @@
 		grid-template-columns: repeat(3, 1fr);
 		gap: 1em;
 	}
-	#stopwatchContainer {
+	#stopwatchWrapper {
 		background-color: #defff2;
 		border-radius: 8px;
 
 		width: fit-content;
 		padding-bottom: 1em;
 		padding-right: 2em;
+	}
+	#stopwatchContainer {
+		border-radius: 8px;
+
+		width: fit-content;
 	}
 </style>

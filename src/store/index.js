@@ -13,7 +13,9 @@ export default createStore({
 		outputminutes: "00",
 		outputhours: "00",
 		laps: [],
+		lapTime: [],
 		isRunning: false,
+		isClicked: true,
 		interval: null,
 	},
 	getters: {
@@ -68,6 +70,31 @@ export default createStore({
 
 		toggleRunning(state) {
 			state.isRunning = !state.isRunning;
+		},
+		toggleClicked(state) {
+			state.isClicked = !state.isClicked;
+		},
+
+		createP(state) {
+			state.lapTime = `${state.outputhours}:${state.outputminutes}:${state.outputseconds}`;
+			let lapContainer = document.getElementById("lapContainer");
+			const para = document.createElement("p");
+			para.innerText = state.lapTime;
+			state.laps = Array.from(
+				document.getElementById("lapContainer").childNodes
+			).map((node) => node.textContent);
+			let lastItem = state.laps[state.laps.length - 1];
+			let currentItem = state.lapTime;
+
+			if (currentItem !== lastItem) {
+				lapContainer.appendChild(para);
+			}
+		},
+		clearLaps() {
+			const container = document.getElementById("lapContainer");
+			while (container.hasChildNodes()) {
+				container.removeChild(container.firstChild);
+			}
 		},
 	},
 	actions: {
