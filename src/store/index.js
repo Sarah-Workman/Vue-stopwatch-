@@ -13,8 +13,14 @@ export default createStore({
 		outputseconds: "00",
 		outputminutes: "00",
 		outputhours: "00",
-		laps: [],
-		lapTime: [],
+		laps: [
+			{
+				lapHour: undefined,
+				lapMinute: undefined,
+				lapSecond: undefined,
+			},
+		],
+		lapTime: "",
 		isRunning: false,
 
 		interval: null,
@@ -74,18 +80,19 @@ export default createStore({
 		},
 
 		createP(state) {
-			state.lapTime = `${state.outputhours}:${state.outputminutes}:${state.outputseconds}`;
-			let lapContainer = document.getElementById("lapContainer");
-			const para = document.createElement("p");
-			para.innerText = state.lapTime;
-			state.laps = Array.from(
-				document.getElementById("lapContainer").childNodes
-			).map((node) => node.textContent);
-			let lastItem = state.laps[state.laps.length - 1];
+			var [{ lapHour, lapMinute, lapSecond }] = state.laps;
+			lapHour = state.outputhours;
+			lapMinute = state.outputminutes;
+			lapSecond = state.outputseconds;
+			state.lapTime = `${lapHour}:${lapMinute}:${lapSecond}`;
+
+			let lastItem = state.lapTime[state.lapTime.length - 1];
 			let currentItem = state.lapTime;
 
 			if (currentItem !== lastItem) {
-				lapContainer.appendChild(para);
+				state.laps.push(state.lapTime);
+				console.log(state.lapTime);
+				console.log(state.laps);
 			}
 		},
 		clearLaps() {
