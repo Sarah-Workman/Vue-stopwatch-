@@ -87,6 +87,9 @@ export default createStore({
 			state.outputseconds = "00";
 			state.outputminutes = "00";
 			state.outputhours = "00";
+			state.seconds = 0;
+			state.minutes = 0;
+			state.hours = 0;
 		},
 
 		toggleRunning(state) {
