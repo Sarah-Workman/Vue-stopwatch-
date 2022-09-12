@@ -44,16 +44,12 @@
 					this.$store.state.interval = setInterval(() => {
 						this.$store.commit("countSeconds");
 						const outputseconds = this.$store.getters.outputSeconds;
-
 						this.$store.commit("setOutputSeconds", outputseconds);
 						if (this.$store.state.seconds >= 60) {
 							this.$store.commit("countMinutes");
 							this.$store.commit("clearSeconds");
-							this.$store.getters.outputMinutes;
-							const outputminutes = this.$store.commit(
-								"setOutputMinutes",
-								outputminutes
-							);
+							const outputminutes = this.$store.getters.outputMinutes;
+							this.$store.commit("setOutputMinutes", outputminutes);
 						} else if (this.$store.state.minutes >= 60) {
 							this.$store.commit("countHours");
 							this.$store.commit("clearMinutes");
