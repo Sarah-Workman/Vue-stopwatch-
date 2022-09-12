@@ -40,8 +40,8 @@
 			text-align: left;
 			font-size: 20px;
 			font-family: $fontStyle;
-			padding-left: 13em;
-			padding-right: 13em;
+			padding-left: 11.5em;
+
 			margin: 0em;
 		}
 	}
