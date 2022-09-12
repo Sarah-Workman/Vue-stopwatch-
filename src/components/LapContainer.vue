@@ -29,12 +29,11 @@
 		@include flex();
 
 		margin: auto;
-		width: 50%;
+
 		align-content: flex-start;
 		flex-direction: column;
-		margin-top: 2em;
+		margin-top: 1em;
 
-		padding-left: 2em;
 		& p {
 			background-color: rgb(132, 130, 130);
 			color: white;

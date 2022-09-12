@@ -43,22 +43,21 @@
 					this.$store.commit("toggleRunning");
 					this.$store.state.interval = setInterval(() => {
 						this.$store.commit("countSeconds");
-						const outputSeconds =
-							this.seconds < 10 ? "0" + this.seconds : this.seconds;
+						const outputseconds = this.$store.getters.outputSeconds;
 
-						this.$store.commit("setOutputSeconds", outputSeconds);
+						this.$store.commit("setOutputSeconds", outputseconds);
 						if (this.$store.state.seconds >= 60) {
 							this.$store.commit("countMinutes");
 							this.$store.commit("clearSeconds");
-
-							const outputminutes =
-								this.minutes < 10 ? "0" + this.minutes : this.minutes;
-							this.$store.commit("setOutputMinutes", outputminutes);
+							this.$store.getters.outputMinutes;
+							const outputminutes = this.$store.commit(
+								"setOutputMinutes",
+								outputminutes
+							);
 						} else if (this.$store.state.minutes >= 60) {
 							this.$store.commit("countHours");
 							this.$store.commit("clearMinutes");
-							const outputhours =
-								this.hours < 10 ? "0" + this.hours : this.hours;
+							const outputhours = this.$store.getters.outputHours;
 							this.$store.commit("setOutputHours", outputhours);
 						}
 					}, 1000);
@@ -97,9 +96,7 @@
 				"isClicked",
 			]),
 
-			...mapGetters({
-				//secondLength: getterTypes.SECOND_LENGTH
-			}),
+			...mapGetters(["outputSeconds", "outputMinutes", "outputHours"]),
 		},
 	};
 </script>

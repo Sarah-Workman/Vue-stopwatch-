@@ -35,6 +35,20 @@ export default createStore({
 		hourLength(state) {
 			return state.hours.toString.length;
 		},
+		outputSeconds(state) {
+			const outputSeconds =
+				state.seconds < 10 ? "0" + state.seconds : state.seconds;
+			return outputSeconds;
+		},
+		outputMinutes(state) {
+			const outputminutes =
+				state.minutes < 10 ? "0" + state.minutes : state.minutes;
+			return outputminutes;
+		},
+		outputHours(state) {
+			const outputHours = state.hours < 10 ? "0" + state.hours : state.hours;
+			return outputHours;
+		},
 	},
 	mutations: {
 		countSeconds(state) {
@@ -101,19 +115,6 @@ export default createStore({
 			}
 		},
 	},
-	actions: {
-		incrementSeconds(context) {
-			context.commit("countSeconds");
-		},
-		incrementMinutes(context) {
-			context.commit("countMinutes");
-		},
-		incrementHours(context) {
-			context.commit("countHours");
-		},
-		addPlaceholderSeconds(context) {
-			context.commit("placeholderSeconds");
-		},
-	},
+	actions: {},
 	modules: {},
 });
