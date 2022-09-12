@@ -88,13 +88,7 @@
 			},
 		},
 		computed: {
-			...mapState([
-				"seconds",
-				"minutes",
-				"hours",
-				"outputSeconds",
-				"isClicked",
-			]),
+			...mapState(["seconds", "minutes", "hours", "outputSeconds"]),
 
 			...mapGetters(["outputSeconds", "outputMinutes", "outputHours"]),
 		},

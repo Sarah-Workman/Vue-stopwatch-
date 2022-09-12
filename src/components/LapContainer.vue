@@ -40,7 +40,7 @@
 			text-align: left;
 			font-size: 20px;
 			font-family: $fontStyle;
-			padding-left: 11.5em;
+			padding-left: 10em;
 
 			margin: 0em;
 		}
