@@ -95,10 +95,9 @@ export default createStore({
 				console.log(state.laps);
 			}
 		},
-		clearLaps() {
-			const container = document.getElementById("lapContainer");
-			while (container.hasChildNodes()) {
-				container.removeChild(container.firstChild);
+		clearLaps(state) {
+			while (state.laps.length > 1) {
+				state.laps.pop();
 			}
 		},
 	},
