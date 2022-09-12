@@ -86,7 +86,7 @@ export default createStore({
 			lapSecond = state.outputseconds;
 			state.lapTime = `${lapHour}:${lapMinute}:${lapSecond}`;
 
-			let lastItem = state.lapTime[state.lapTime.length - 1];
+			let lastItem = state.laps[state.laps.length - 1];
 			let currentItem = state.lapTime;
 
 			if (currentItem !== lastItem) {
