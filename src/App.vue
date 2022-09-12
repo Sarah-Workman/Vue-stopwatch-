@@ -33,7 +33,7 @@
 		align-items: flex-end;
 		padding: 0.5em;
 		background-color: rgb(138, 136, 136);
-		padding-bottom: 5em;
+		padding-bottom: 4.5em;
 
 		a {
 			@include menuBtn();
@@ -42,13 +42,9 @@
 
 			color: white;
 			&:hover {
-				border-left: 1px solid #0ff4c6;
-				border-right: 1px solid #0ff4c6;
 				border-width: 10%;
 			}
 			&.router-link-exact-active {
-				border-left: 1px solid #0ff4c6;
-				border-right: 1px solid #0ff4c6;
 			}
 		}
 	}
