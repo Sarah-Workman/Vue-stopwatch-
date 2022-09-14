@@ -75,7 +75,7 @@
 				console.log("lapBtn connected");
 
 				if (this.$store.state.isRunning === true) {
-					this.$store.commit("createP");
+					this.$store.commit("setLapTime");
 				}
 			},
 			resetLapsBtn() {

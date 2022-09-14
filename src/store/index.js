@@ -13,13 +13,7 @@ export default createStore({
 		outputseconds: "00",
 		outputminutes: "00",
 		outputhours: "00",
-		laps: [
-			{
-				lapHour: undefined,
-				lapMinute: undefined,
-				lapSecond: undefined,
-			},
-		],
+		laps: [],
 		lapTime: "",
 		isRunning: false,
 
@@ -96,8 +90,8 @@ export default createStore({
 			state.isRunning = !state.isRunning;
 		},
 
-		createP(state) {
-			var [{ lapHour, lapMinute, lapSecond }] = state.laps;
+		setLapTime(state) {
+			let [lapHour, lapMinute, lapSecond] = [0, 0, 0];
 			lapHour = state.outputhours;
 			lapMinute = state.outputminutes;
 			lapSecond = state.outputseconds;
@@ -108,12 +102,10 @@ export default createStore({
 
 			if (currentItem !== lastItem) {
 				state.laps.push(state.lapTime);
-				console.log(state.lapTime);
-				console.log(state.laps);
 			}
 		},
 		clearLaps(state) {
-			while (state.laps.length > 1) {
+			while (state.laps.length > 0) {
 				state.laps.pop();
 			}
 		},
