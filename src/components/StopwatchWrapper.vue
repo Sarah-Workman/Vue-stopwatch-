@@ -76,6 +76,7 @@
 
 				if (this.$store.state.isRunning === true) {
 					this.$store.commit("setLapTime");
+					this.$store.dispatch("addData");
 				}
 			},
 			resetLapsBtn() {
@@ -83,6 +84,7 @@
 				this.$store.commit("clearLaps");
 			},
 		},
+
 		computed: {
 			...mapState(["seconds", "minutes", "hours", "outputSeconds"]),
 

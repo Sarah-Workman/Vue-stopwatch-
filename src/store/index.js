@@ -1,4 +1,7 @@
-import { createStore } from "vuex";
+import { createStore, mapGetters } from "vuex";
+import { collection, getDocs } from "firebase/firestore";
+import { addDoc } from "firebase/firestore";
+import { db } from "@/firebase";
 
 export const getterTypes = Object.freeze({
 	SECOND_LENGTH: `secondLength`,
@@ -109,7 +112,35 @@ export default createStore({
 				state.laps.pop();
 			}
 		},
+		setLaps(state, lapTimeString) {
+			state.laps.push(lapTimeString);
+		},
 	},
-	actions: {},
+	actions: {
+		async addData(state) {
+			// Add a new document with a generated id.
+			const docRef = await addDoc(collection(db, "Laps"), {
+				lapHour: state.state.outputhours,
+				lapMinute: state.state.outputminutes,
+				lapSecond: state.state.outputseconds,
+			});
+			console.log("Document written with ID: ", docRef.id);
+		},
+		async getData({ commit }) {
+			const querySnapshot = await getDocs(collection(db, "Laps"));
+			querySnapshot.forEach((doc) => {
+				// doc.data() is never undefined for query doc snapshots
+				console.log(doc.id, " => ", doc.data());
+
+				let lapHour = doc.data().lapHour;
+
+				let lapMinute = doc.data().lapMinute;
+
+				let lapSecond = doc.data().lapSecond;
+
+				commit("setLaps", `${lapHour}:${lapMinute}:${lapSecond}`);
+			});
+		},
+	},
 	modules: {},
 });
