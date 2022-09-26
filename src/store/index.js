@@ -2,6 +2,7 @@ import { createStore, mapGetters } from "vuex";
 import { collection, getDocs } from "firebase/firestore";
 import { addDoc } from "firebase/firestore";
 import { db } from "@/firebase";
+import { doc, deleteDoc } from "firebase/firestore";
 
 export const getterTypes = Object.freeze({
 	SECOND_LENGTH: `secondLength`,
@@ -19,7 +20,8 @@ export default createStore({
 		laps: [],
 		lapTime: "",
 		isRunning: false,
-
+		editLapTime: false,
+		lapId: "",
 		interval: null,
 	},
 	getters: {
@@ -92,6 +94,9 @@ export default createStore({
 		toggleRunning(state) {
 			state.isRunning = !state.isRunning;
 		},
+		toggleEditLapTime(state) {
+			state.editLapTime = !state.editLapTime;
+		},
 
 		setLapTime(state) {
 			let [lapHour, lapMinute, lapSecond] = [0, 0, 0];
@@ -114,6 +119,9 @@ export default createStore({
 		},
 		setLaps(state, lapTimeString) {
 			state.laps.push(lapTimeString);
+		},
+		setId(state, lapId) {
+			state.lapId = lapId;
 		},
 	},
 	actions: {
@@ -139,6 +147,19 @@ export default createStore({
 				let lapSecond = doc.data().lapSecond;
 
 				commit("setLaps", `${lapHour}:${lapMinute}:${lapSecond}`);
+			});
+		},
+		async deleteOne(state) {
+			const querySnapshot = await getDocs(collection(db, "Laps"));
+			querySnapshot.forEach((doc) => {
+				state.state.lapId = doc.id;
+			});
+			deleteDoc(doc(db, "Laps", state.state.lapId));
+		},
+		async getCurrentId(state) {
+			const querySnapshot = await getDocs(collection(db, "Laps"));
+			querySnapshot.forEach((doc) => {
+				state.state.lapId = doc.id;
 			});
 		},
 	},

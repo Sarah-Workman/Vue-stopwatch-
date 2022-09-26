@@ -12,7 +12,12 @@
 			<Rectangle />
 		</div>
 
-		<LapContainer />
+		<LapContainer
+			@delete-one="deleteOne"
+			@edit-one="editOne"
+			@submit-edit="editOne(id)"
+			ref="lapInfo"
+		/>
 	</div>
 </template>
 
@@ -83,10 +88,19 @@
 				console.log("resetLapsBtn connected");
 				this.$store.commit("clearLaps");
 			},
+			deleteOne() {
+				this.$store.dispatch("deleteOne");
+				console.log("deletOne is connected ");
+			},
+			editOne(id) {
+				this.$store.commit("toggleEditLapTime");
+				this.$store.commit("setId", id);
+				console.log(this.$store.state.lapId);
+			},
 		},
 
 		computed: {
-			...mapState(["seconds", "minutes", "hours", "outputSeconds"]),
+			...mapState(["seconds", "minutes", "hours", "outputSeconds", "lapId"]),
 
 			...mapGetters(["outputSeconds", "outputMinutes", "outputHours"]),
 		},

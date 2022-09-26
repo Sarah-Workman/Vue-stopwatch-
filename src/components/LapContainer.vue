@@ -1,25 +1,38 @@
 <template>
 	<div class="lap-container">
 		<div v-for="(lap, index) in laps" :key="index" class="lap-wrapper">
-			<p>
-				{{ lap }}
-			</p>
-			<LapControlComp />
+			<div class="div">
+				<input
+					v-if="editLapTime && index == 'lapId'"
+					:placeholder="lapTime"
+					@keyup.self="$emit('submit-edit')"
+				/>
+				<p v-else>{{ lap }}</p>
+			</div>
+			<i @click.self="$emit('delete-one')" class="fa-solid fa-trash"></i>
+			<i @click.self="editOne({ index })" class="fa-solid fa-pen"></i>
 		</div>
 	</div>
 </template>
 
 <script>
 	import { mapState } from "vuex";
-	import LapControlComp from "./LapControlComp";
+
 	export default {
 		name: "LapContainer",
-		methods: {},
+
+		methods: {
+			editOne({ index }) {
+				let id = { index };
+				this.$emit("edit-one", id);
+			},
+		},
 
 		computed: {
-			...mapState(["laps"]),
+			...mapState(["laps", "lapTime", "editLapTime", "lapId"]),
 		},
-		components: LapControlComp,
+
+		emits: ["delete-one", "edit-one", "submit-edit", "v-check"],
 	};
 </script>
 
@@ -45,20 +58,23 @@
 			text-align: left;
 			font-size: 20px;
 			font-family: $fontStyle;
-			padding-left: 9.75em;
 
 			margin: 0em;
 		}
 	}
 
 	.lap-container::v-deep .lap-wrapper {
-		width: 100%;
 		padding: 1em;
 		display: grid;
+
 		grid-template-columns: repeat(3, 1fr);
 		& p {
-			padding-left: 4em;
-			padding-right: 4em;
+			margin-left: 4em;
+			margin-right: 4em;
+		}
+		& input {
+			margin-left: 4em;
+			margin-right: 4em;
 		}
 	}
 </style>
