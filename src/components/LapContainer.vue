@@ -1,14 +1,13 @@
 <template>
 	<div class="lap-container">
 		<div v-for="(lap, index) in laps" :key="index" class="lap-wrapper">
-			<div class="div">
-				<input
-					v-if="editLapTime && index == 'lapId'"
-					:placeholder="lapTime"
-					@keyup.self="$emit('submit-edit')"
-				/>
-				<p v-else>{{ lap }}</p>
-			</div>
+			<input
+				v-if="editLapTime && { index } === lapId"
+				:placeholder="lapTime"
+				@keyup.self="$emit('submit-edit')"
+			/>
+			<p v-else>{{ lap }}</p>
+
 			<i @click.self="$emit('delete-one')" class="fa-solid fa-trash"></i>
 			<i @click.self="editOne({ index })" class="fa-solid fa-pen"></i>
 		</div>
