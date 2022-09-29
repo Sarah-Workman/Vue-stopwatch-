@@ -12,12 +12,7 @@
 			<Rectangle />
 		</div>
 
-		<LapContainer
-			@delete-one="deleteOne"
-			@edit-one="editOne"
-			@submit-edit="editOne(id)"
-			ref="lapInfo"
-		/>
+		<LapContainer @delete-one="deleteOne" @edit-one="editONE" ref="lapInfo" />
 	</div>
 </template>
 
@@ -92,10 +87,10 @@
 				this.$store.dispatch("deleteOne");
 				console.log("deletOne is connected ");
 			},
-			editOne(id) {
+			editONE(id) {
+				console.log("editONE is connected");
 				this.$store.commit("toggleEditLapTime");
 				this.$store.commit("setId", id);
-				console.log(this.$store.state.lapId);
 			},
 		},
 

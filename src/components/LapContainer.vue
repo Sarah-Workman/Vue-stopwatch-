@@ -1,15 +1,20 @@
 <template>
 	<div class="lap-container">
-		<div v-for="(lap, index) in laps" :key="index" class="lap-wrapper">
+		<div
+			v-for="(lap, index) in laps"
+			:key="index"
+			class="lap-wrapper"
+			ref="lap"
+		>
 			<input
-				v-if="editLapTime && { index } === lapId"
+				v-if="lapId === index"
 				:placeholder="lapTime"
 				@keyup.self="$emit('submit-edit')"
 			/>
 			<p v-else>{{ lap }}</p>
 
 			<i @click.self="$emit('delete-one')" class="fa-solid fa-trash"></i>
-			<i @click.self="editOne({ index })" class="fa-solid fa-pen"></i>
+			<i @click.self="editOne(index)" class="fa-solid fa-pen" ref="edit"></i>
 		</div>
 	</div>
 </template>
@@ -21,8 +26,8 @@
 		name: "LapContainer",
 
 		methods: {
-			editOne({ index }) {
-				let id = { index };
+			editOne(index) {
+				let id = index;
 				this.$emit("edit-one", id);
 			},
 		},

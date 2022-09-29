@@ -20,8 +20,8 @@ export default createStore({
 		laps: [],
 		lapTime: "",
 		isRunning: false,
-		editLapTime: false,
-		lapId: "",
+
+		lapId: 0,
 		interval: null,
 	},
 	getters: {
@@ -120,8 +120,8 @@ export default createStore({
 		setLaps(state, lapTimeString) {
 			state.laps.push(lapTimeString);
 		},
-		setId(state, lapId) {
-			state.lapId = lapId;
+		setId(state, id) {
+			state.lapId = id;
 		},
 	},
 	actions: {
@@ -156,10 +156,11 @@ export default createStore({
 			});
 			deleteDoc(doc(db, "Laps", state.state.lapId));
 		},
-		async getCurrentId(state) {
+		async getCurrentId({ commit }) {
 			const querySnapshot = await getDocs(collection(db, "Laps"));
 			querySnapshot.forEach((doc) => {
-				state.state.lapId = doc.id;
+				let id = doc.id;
+				commit("setId", id);
 			});
 		},
 	},
