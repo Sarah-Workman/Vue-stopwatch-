@@ -12,7 +12,7 @@
 			<Rectangle />
 		</div>
 
-		<LapContainer @delete-one="deleteOne" @edit-one="editONE" ref="lapInfo" />
+		<LapContainer @delete-one="deleteOne" ref="lapInfo" />
 	</div>
 </template>
 
@@ -72,25 +72,16 @@
 				this.$store.commit("clearLaps");
 			},
 			lapBtn() {
-				console.log("lapBtn connected");
-
 				if (this.$store.state.isRunning === true) {
 					this.$store.commit("setLapTime");
 					this.$store.dispatch("addData");
 				}
 			},
 			resetLapsBtn() {
-				console.log("resetLapsBtn connected");
 				this.$store.commit("clearLaps");
 			},
 			deleteOne() {
 				this.$store.dispatch("deleteOne");
-				console.log("deletOne is connected ");
-			},
-			editONE(id) {
-				console.log("editONE is connected");
-				this.$store.commit("toggleEditLapTime");
-				this.$store.commit("setId", id);
 			},
 		},
 

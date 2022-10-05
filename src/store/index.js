@@ -1,8 +1,14 @@
-import { createStore, mapGetters } from "vuex";
-import { collection, getDocs } from "firebase/firestore";
-import { addDoc } from "firebase/firestore";
+import { createStore } from "vuex";
+import {
+	collection,
+	getDocs,
+	query,
+	where,
+	addDoc,
+	doc,
+	deleteDoc,
+} from "firebase/firestore";
 import { db } from "@/firebase";
-import { doc, deleteDoc } from "firebase/firestore";
 
 export const getterTypes = Object.freeze({
 	SECOND_LENGTH: `secondLength`,
@@ -18,10 +24,12 @@ export default createStore({
 		outputminutes: "00",
 		outputhours: "00",
 		laps: [],
+		placeHolder: "",
 		lapTime: "",
 		isRunning: false,
-
-		lapId: 0,
+		editing: false,
+		fireBaseIds: [],
+		lapId: "",
 		interval: null,
 	},
 	getters: {
@@ -48,6 +56,8 @@ export default createStore({
 			const outputHours = state.hours < 10 ? "0" + state.hours : state.hours;
 			return outputHours;
 		},
+		getUniqueLapId: (state) => (lapId) =>
+			state.fireBaseIds.find((id) => id === lapId),
 	},
 	mutations: {
 		countSeconds(state) {
@@ -95,7 +105,7 @@ export default createStore({
 			state.isRunning = !state.isRunning;
 		},
 		toggleEditLapTime(state) {
-			state.editLapTime = !state.editLapTime;
+			state.editing = !state.editing;
 		},
 
 		setLapTime(state) {
@@ -123,6 +133,12 @@ export default createStore({
 		setId(state, id) {
 			state.lapId = id;
 		},
+		setDbId(state, dbId) {
+			state.fireBaseIds.push(dbId);
+		},
+		setPlaceholder(state, placeholder) {
+			state.placeHolder = placeholder;
+		},
 	},
 	actions: {
 		async addData(state) {
@@ -146,7 +162,11 @@ export default createStore({
 
 				let lapSecond = doc.data().lapSecond;
 
-				commit("setLaps", `${lapHour}:${lapMinute}:${lapSecond}`);
+				commit("setLaps", {
+					id: doc.id,
+					time: `${lapHour}:${lapMinute}:${lapSecond}`,
+				});
+				commit("setDbId", doc.id);
 			});
 		},
 		async deleteOne(state) {
@@ -156,11 +176,22 @@ export default createStore({
 			});
 			deleteDoc(doc(db, "Laps", state.state.lapId));
 		},
-		async getCurrentId({ commit }) {
+
+		async getPlaceholder({ state, commit }) {
 			const querySnapshot = await getDocs(collection(db, "Laps"));
 			querySnapshot.forEach((doc) => {
-				let id = doc.id;
-				commit("setId", id);
+				// doc.data() is never undefined for query doc snapshots
+				console.log(doc.id, " => ", doc.data());
+
+				let lapHour = doc.data().lapHour;
+
+				let lapMinute = doc.data().lapMinute;
+
+				let lapSecond = doc.data().lapSecond;
+
+				if (doc.id === state.lapId) {
+					commit("setPlaceholder", `${lapHour}:${lapMinute}:${lapSecond}`);
+				}
 			});
 		},
 	},
