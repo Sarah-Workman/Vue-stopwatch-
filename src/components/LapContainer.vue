@@ -1,16 +1,32 @@
 <template>
 	<div class="lap-container">
-		<div v-for="lap in laps" :key="lap.id" class="lap-wrapper" ref="lap">
+		<div v-for="lap in laps" :key="lap.id" class="lap-wrapper">
 			<input
-				v-if="lap.id === lapId"
-				:placeholder="placeHolder"
-				@keyup.self="$emit('submit-edit')"
+				v-if="lap.id === lapId && editing === true"
+				:placeholder="placeHolderHour"
 				:class="{ editing: lap.id === lapId }"
+				@keyup.enter="update(lap.id)"
+				v-model="inputHours"
 			/>
-			<p v-else>{{ lap.time }}</p>
-
-			<i @click.self="$emit('delete-one')" class="fa-solid fa-trash"></i>
-			<i @click.self="editOne(lap.id)" class="fa-solid fa-pen" ref="edit"></i>
+			<input
+				v-if="lap.id === lapId && editing === true"
+				:placeholder="placeHolderMinute"
+				:class="{ editing: lap.id === lapId }"
+				@keyup.enter="update(lap.id)"
+				v-model="inputMinutes"
+			/>
+			<input
+				v-if="lap.id === lapId && editing === true"
+				:placeholder="placeHolderSecond"
+				:class="{ editing: lap.id === lapId }"
+				@keyup.enter="update(lap.id)"
+				v-model="inputSeconds"
+			/>
+			<p v-else>
+				{{ lap.time
+				}}<i @click.self="$emit('delete-one')" class="fa-solid fa-trash"></i
+				><i @click.self="editOne(lap.id)" class="fa-solid fa-pen"></i>
+			</p>
 		</div>
 	</div>
 </template>
@@ -20,14 +36,35 @@
 
 	export default {
 		name: "LapContainer",
-
+		data() {
+			return {
+				inputHours: "",
+				inputMinutes: "",
+				inputSeconds: "",
+			};
+		},
 		methods: {
-			...mapMutations(["setId"]),
+			...mapMutations(["setId", "setInputValues"]),
 
 			editOne(lapId) {
 				let lapToEdit = this.getLapById(lapId);
 				this.$store.commit("setId", lapToEdit);
 				this.$store.dispatch("getPlaceholder");
+			},
+			update(id) {
+				this.$store.commit("setInputValues", {
+					lapHour: this.inputHours,
+					lapMinute: this.inputMinutes,
+					lapSecond: this.inputSeconds,
+				});
+
+				this.$store.getters.nullInputs;
+
+				this.$store.dispatch("updateLap", {
+					lapId: id,
+				});
+				this.$store.dispatch("updateApp");
+				this.$store.state.editing = false;
 			},
 		},
 
@@ -37,13 +74,16 @@
 				"lapTime",
 				"editLapTime",
 				"lapId",
-				"placeHolder",
+				"placeHolderHour",
+				"placeHolderSecond",
+				"placeHolderMinute",
 				"fireBaseId",
 				"editing",
 			]),
 			...mapGetters({
 				getLapById: "getUniqueLapId",
 			}),
+			...mapGetters(["nullInputs"]),
 		},
 
 		emits: ["delete-one", "edit-one", "submit-edit", "v-check"],
@@ -66,6 +106,9 @@
 		align-content: flex-start;
 		flex-direction: column;
 		margin-top: 1em;
+		& .lap-wrapper {
+			align-content: center;
+		}
 
 		& p {
 			color: black;
@@ -78,17 +121,10 @@
 	}
 
 	.lap-container::v-deep .lap-wrapper {
-		padding: 1em;
-		display: grid;
-
-		grid-template-columns: repeat(3, 1fr);
 		& p {
-			margin-left: 4em;
-			margin-right: 4em;
-		}
-		& input {
-			margin-left: 4em;
-			margin-right: 4em;
+			display: grid;
+			grid-template-columns: repeat(3, 1fr);
+			padding: 0em;
 		}
 	}
 
@@ -103,5 +139,7 @@
 		-webkit-box-shadow: none;
 		-moz-box-shadow: none;
 		box-shadow: none;
+		width: 25%;
+		margin: 0em;
 	}
 </style>

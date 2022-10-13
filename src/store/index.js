@@ -2,11 +2,11 @@ import { createStore } from "vuex";
 import {
 	collection,
 	getDocs,
-	query,
-	where,
 	addDoc,
 	doc,
 	deleteDoc,
+	updateDoc,
+	onSnapshot,
 } from "firebase/firestore";
 import { db } from "@/firebase";
 
@@ -23,11 +23,17 @@ export default createStore({
 		outputseconds: "00",
 		outputminutes: "00",
 		outputhours: "00",
+		lapHour: "",
+		lapMinute: "",
+		lapHour: "",
 		laps: [],
-		placeHolder: "",
+		placeHolderHour: "",
+		placeHolderMinute: "",
+		placeHolderSecond: "",
 		lapTime: "",
+		editValue: {},
 		isRunning: false,
-		editing: false,
+		editing: true,
 		fireBaseIds: [],
 		lapId: "",
 		interval: null,
@@ -55,6 +61,17 @@ export default createStore({
 		outputHours(state) {
 			const outputHours = state.hours < 10 ? "0" + state.hours : state.hours;
 			return outputHours;
+		},
+		nullInputs(state) {
+			state.lapSecond === ""
+				? (state.lapSecond = "00")
+				: (state.lapSecond = state.lapSecond);
+			state.lapMinute === ""
+				? (state.lapMinute = "00")
+				: (state.lapMinute = state.lapMinute);
+			state.lapHour === ""
+				? (state.lapHour = "00")
+				: (state.lapHour = state.lapHour);
 		},
 		getUniqueLapId: (state) => (lapId) =>
 			state.fireBaseIds.find((id) => id === lapId),
@@ -136,8 +153,20 @@ export default createStore({
 		setDbId(state, dbId) {
 			state.fireBaseIds.push(dbId);
 		},
-		setPlaceholder(state, placeholder) {
-			state.placeHolder = placeholder;
+		setPlaceholderHour(state, placeholder) {
+			state.placeHolderHour = placeholder;
+		},
+		setPlaceholderMinute(state, placeholder) {
+			state.placeHolderMinute = placeholder;
+		},
+		setPlaceholderSecond(state, placeholder) {
+			state.placeHolderSecond = placeholder;
+		},
+
+		setInputValues(state, payload) {
+			state.lapHour = payload.lapHour;
+			state.lapMinute = payload.lapMinute;
+			state.lapSecond = payload.lapSecond;
 		},
 	},
 	actions: {
@@ -190,8 +219,25 @@ export default createStore({
 				let lapSecond = doc.data().lapSecond;
 
 				if (doc.id === state.lapId) {
-					commit("setPlaceholder", `${lapHour}:${lapMinute}:${lapSecond}`);
+					commit("setPlaceholderHour", lapHour);
+					commit("setPlaceholderMinute", lapMinute);
+					commit("setPlaceholderSecond", lapSecond);
 				}
+			});
+		},
+
+		async updateLap({ state }, payload) {
+			const querySnapshot = doc(db, "Laps", payload.lapId);
+
+			await updateDoc(querySnapshot, {
+				lapHour: state.lapHour,
+				lapMinute: state.lapMinute,
+				lapSecond: state.lapSecond,
+			});
+		},
+		async updateApp() {
+			const update = onSnapshot(doc(db, "Laps"), (doc) => {
+				console.log("current date", doc.data());
 			});
 		},
 	},
