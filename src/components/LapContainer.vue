@@ -2,23 +2,23 @@
 	<div class="lap-container">
 		<div v-for="lap in laps" :key="lap.id" class="lap-wrapper">
 			<input
-				v-if="lap.id === lapId && editing === true"
+				v-if="lap.id === lapId && editing === false"
 				:placeholder="placeHolderHour"
 				:class="{ editing: lap.id === lapId }"
 				@keyup.enter="update(lap.id)"
 				v-model="inputHours"
 			/>
 			<input
-				v-if="lap.id === lapId && editing === true"
+				v-if="lap.id === lapId && editing === false"
 				:placeholder="placeHolderMinute"
 				:class="{ editing: lap.id === lapId }"
 				@keyup.enter="update(lap.id)"
 				v-model="inputMinutes"
 			/>
 			<input
-				v-if="lap.id === lapId && editing === true"
+				v-if="lap.id === lapId && editing === false"
 				:placeholder="placeHolderSecond"
-				:class="{ editing: lap.id === lapId }"
+				:class="{ editing: lap.id === lapId && editing === false }"
 				@keyup.enter="update(lap.id)"
 				v-model="inputSeconds"
 			/>
@@ -47,6 +47,7 @@
 			...mapMutations(["setId", "setInputValues"]),
 
 			editOne(lapId) {
+				this.$store.state.editing = false;
 				let lapToEdit = this.getLapById(lapId);
 				this.$store.commit("setId", lapToEdit);
 				this.$store.dispatch("getPlaceholder");
@@ -63,8 +64,9 @@
 				this.$store.dispatch("updateLap", {
 					lapId: id,
 				});
-				this.$store.dispatch("updateApp");
-				this.$store.state.editing = false;
+				this.$store.dispatch("updateApp", { lapId: id });
+
+				this.$store.state.editing = true;
 			},
 		},
 

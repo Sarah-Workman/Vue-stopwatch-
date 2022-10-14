@@ -2,6 +2,7 @@ import { createStore } from "vuex";
 import {
 	collection,
 	getDocs,
+	getDoc,
 	addDoc,
 	doc,
 	deleteDoc,
@@ -25,7 +26,7 @@ export default createStore({
 		outputhours: "00",
 		lapHour: "",
 		lapMinute: "",
-		lapHour: "",
+		lapSecond: "",
 		laps: [],
 		placeHolderHour: "",
 		placeHolderMinute: "",
@@ -33,7 +34,7 @@ export default createStore({
 		lapTime: "",
 		editValue: {},
 		isRunning: false,
-		editing: true,
+		editing: false,
 		fireBaseIds: [],
 		lapId: "",
 		interval: null,
@@ -64,14 +65,25 @@ export default createStore({
 		},
 		nullInputs(state) {
 			state.lapSecond === ""
-				? (state.lapSecond = "00")
+				? (state.lapSecond = state.lapSecond)
 				: (state.lapSecond = state.lapSecond);
 			state.lapMinute === ""
-				? (state.lapMinute = "00")
+				? (state.lapMinute = state.lapMinute)
 				: (state.lapMinute = state.lapMinute);
 			state.lapHour === ""
-				? (state.lapHour = "00")
+				? (state.lapHour = state.lapHour)
 				: (state.lapHour = state.lapHour);
+
+
+			state.lapHour.length < 2
+				? (state.lapHour = `0${state.lapHour}`)
+				: (state.lapHour = state.lapHour);
+			state.lapMinute.length < 2
+				? (state.lapMinute = `0${state.lapMinute}`)
+				: (state.lapMinute = state.lapMinute);
+			state.lapSecond.length < 2
+				? (state.lapSecond = `0${state.lapSecond}`)
+				: (state.lapSecond = state.lapSecond);
 		},
 		getUniqueLapId: (state) => (lapId) =>
 			state.fireBaseIds.find((id) => id === lapId),
@@ -168,6 +180,10 @@ export default createStore({
 			state.lapMinute = payload.lapMinute;
 			state.lapSecond = payload.lapSecond;
 		},
+		updateLaps(state, payload) {
+			let lap = state.laps.find((lap) => lap.id == payload.id);
+			lap.time = payload.time;
+		},
 	},
 	actions: {
 		async addData(state) {
@@ -235,9 +251,21 @@ export default createStore({
 				lapSecond: state.lapSecond,
 			});
 		},
-		async updateApp() {
-			const update = onSnapshot(doc(db, "Laps"), (doc) => {
-				console.log("current date", doc.data());
+		async updateApp({ state }, payload) {
+			const querySnapshot = await getDocs(collection(db, "Laps"));
+			querySnapshot.forEach((doc) => {
+				let lapHour = doc.data().lapHour;
+
+				let lapMinute = doc.data().lapMinute;
+
+				let lapSecond = doc.data().lapSecond;
+
+				if (doc.id === payload.lapId) {
+					this.commit("updateLaps", {
+						id: payload.lapId,
+						time: `${lapHour}:${lapMinute}:${lapSecond}`,
+					});
+				}
 			});
 		},
 	},
