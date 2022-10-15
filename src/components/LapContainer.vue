@@ -24,7 +24,7 @@
 			/>
 			<p v-else>
 				{{ lap.time
-				}}<i @click.self="$emit('delete-one')" class="fa-solid fa-trash"></i
+				}}<i @click.self="deleteOne(lap.id)" class="fa-solid fa-trash"></i
 				><i @click.self="editOne(lap.id)" class="fa-solid fa-pen"></i>
 			</p>
 		</div>
@@ -67,6 +67,13 @@
 				this.$store.dispatch("updateApp", { lapId: id });
 
 				this.$store.state.editing = true;
+			},
+			deleteOne(id) {
+				console.log(id);
+				this.$store.dispatch("deleteOne", { lapId: id });
+				this.$store.state.editing = true;
+
+				this.$store.dispatch("getDeletedData", { lapId: id });
 			},
 		},
 

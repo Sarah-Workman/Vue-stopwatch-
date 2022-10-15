@@ -12,7 +12,7 @@
 			<Rectangle />
 		</div>
 
-		<LapContainer @delete-one="deleteOne" ref="lapInfo" />
+		<LapContainer ref="lapInfo" />
 	</div>
 </template>
 
@@ -79,9 +79,6 @@
 			},
 			resetLapsBtn() {
 				this.$store.commit("clearLaps");
-			},
-			deleteOne() {
-				this.$store.dispatch("deleteOne");
 			},
 		},
 

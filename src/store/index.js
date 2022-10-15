@@ -64,6 +64,7 @@ export default createStore({
 			return outputHours;
 		},
 		nullInputs(state) {
+			//need to replace with validation
 			state.lapSecond === ""
 				? (state.lapSecond = state.lapSecond)
 				: (state.lapSecond = state.lapSecond);
@@ -73,7 +74,6 @@ export default createStore({
 			state.lapHour === ""
 				? (state.lapHour = state.lapHour)
 				: (state.lapHour = state.lapHour);
-
 
 			state.lapHour.length < 2
 				? (state.lapHour = `0${state.lapHour}`)
@@ -184,6 +184,9 @@ export default createStore({
 			let lap = state.laps.find((lap) => lap.id == payload.id);
 			lap.time = payload.time;
 		},
+		replaceLaps(state, payload) {
+			state.laps.splice(state.laps.indexOf(payload.time), 1);
+		},
 	},
 	actions: {
 		async addData(state) {
@@ -214,12 +217,12 @@ export default createStore({
 				commit("setDbId", doc.id);
 			});
 		},
-		async deleteOne(state) {
+		async deleteOne({ state }) {
 			const querySnapshot = await getDocs(collection(db, "Laps"));
 			querySnapshot.forEach((doc) => {
-				state.state.lapId = doc.id;
+				state.lapId = doc.id;
 			});
-			deleteDoc(doc(db, "Laps", state.state.lapId));
+			deleteDoc(doc(db, "Laps", state.lapId));
 		},
 
 		async getPlaceholder({ state, commit }) {
@@ -251,7 +254,7 @@ export default createStore({
 				lapSecond: state.lapSecond,
 			});
 		},
-		async updateApp({ state }, payload) {
+		async updateApp({ commit }, payload) {
 			const querySnapshot = await getDocs(collection(db, "Laps"));
 			querySnapshot.forEach((doc) => {
 				let lapHour = doc.data().lapHour;
@@ -261,7 +264,27 @@ export default createStore({
 				let lapSecond = doc.data().lapSecond;
 
 				if (doc.id === payload.lapId) {
-					this.commit("updateLaps", {
+					commit("updateLaps", {
+						id: payload.lapId,
+						time: `${lapHour}:${lapMinute}:${lapSecond}`,
+					});
+				}
+			});
+		},
+		async getDeletedData({ commit }, payload) {
+			const querySnapshot = await getDocs(collection(db, "Laps"));
+			querySnapshot.forEach((doc) => {
+				// doc.data() is never undefined for query doc snapshots
+				console.log("new data:" + doc.id, " => ", doc.data());
+
+				let lapHour = doc.data().lapHour;
+
+				let lapMinute = doc.data().lapMinute;
+
+				let lapSecond = doc.data().lapSecond;
+
+				if (doc.id === payload.lapId) {
+					commit("replaceLaps", {
 						id: payload.lapId,
 						time: `${lapHour}:${lapMinute}:${lapSecond}`,
 					});
