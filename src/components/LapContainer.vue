@@ -48,7 +48,9 @@
 
 			editOne(lapId) {
 				this.$store.state.editing = false;
+
 				let lapToEdit = this.getLapById(lapId);
+
 				this.$store.commit("setId", lapToEdit);
 				this.$store.dispatch("getPlaceholder");
 			},

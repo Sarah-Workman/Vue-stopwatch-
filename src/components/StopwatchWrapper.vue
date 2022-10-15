@@ -6,7 +6,6 @@
 				@stop="stopBtn"
 				@reset="resetBtn"
 				@lap="lapBtn"
-				@resetLap="resetLapsBtn"
 			/>
 
 			<Rectangle />
@@ -69,16 +68,11 @@
 				this.$store.commit("toggleRunning");
 				this.$store.commit("clearTimeInterval");
 				this.$store.commit("clear");
-				this.$store.commit("clearLaps");
 			},
 			lapBtn() {
 				if (this.$store.state.isRunning === true) {
-					this.$store.commit("setLapTime");
 					this.$store.dispatch("addData");
 				}
-			},
-			resetLapsBtn() {
-				this.$store.commit("clearLaps");
 			},
 		},
 

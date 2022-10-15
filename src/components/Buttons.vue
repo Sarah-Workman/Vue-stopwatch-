@@ -4,7 +4,6 @@
 		<StopBtn @click="$emit('stop')" text="STOP" />
 		<ResetBtn @click="$emit('reset')" text="RESET" />
 		<LapBtn @click="$emit('lap')" text="LAP" />
-		<ResetLapBtn @click="$emit('resetLap')" text="LAP RESET" />
 	</div>
 </template>
 <script>
@@ -12,7 +11,6 @@
 	import StopBtn from "./StopBtn";
 	import ResetBtn from "./ResetBtn";
 	import LapBtn from "./LapBtn";
-	import ResetLapBtn from "./ResetLapBtn";
 
 	export default {
 		name: "Buttons",
@@ -21,7 +19,6 @@
 			StopBtn,
 			ResetBtn,
 			LapBtn,
-			ResetLapBtn,
 		},
 	};
 </script>

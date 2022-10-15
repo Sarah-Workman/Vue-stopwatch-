@@ -137,25 +137,24 @@ export default createStore({
 			state.editing = !state.editing;
 		},
 
-		setLapTime(state) {
+		setLapTime(state, payload) {
 			let [lapHour, lapMinute, lapSecond] = [0, 0, 0];
 			lapHour = state.outputhours;
 			lapMinute = state.outputminutes;
 			lapSecond = state.outputseconds;
-			state.lapTime = `${lapHour}:${lapMinute}:${lapSecond}`;
+			state.lapTime = {
+				id: payload.lapId,
+				time: `${lapHour}:${lapMinute}:${lapSecond}`,
+			};
 
 			let lastItem = state.laps[state.laps.length - 1];
-			let currentItem = state.lapTime;
+			let currentItem = state.lapTime.time;
 
-			if (currentItem !== lastItem) {
+			if (currentItem !== lastItem.time) {
 				state.laps.push(state.lapTime);
 			}
 		},
-		clearLaps(state) {
-			while (state.laps.length > 0) {
-				state.laps.pop();
-			}
-		},
+
 		setLaps(state, lapTimeString) {
 			state.laps.push(lapTimeString);
 		},
@@ -189,13 +188,15 @@ export default createStore({
 		},
 	},
 	actions: {
-		async addData(state) {
+		async addData({ state, commit }) {
 			// Add a new document with a generated id.
 			const docRef = await addDoc(collection(db, "Laps"), {
-				lapHour: state.state.outputhours,
-				lapMinute: state.state.outputminutes,
-				lapSecond: state.state.outputseconds,
+				lapHour: state.outputhours,
+				lapMinute: state.outputminutes,
+				lapSecond: state.outputseconds,
 			});
+			commit("setLapTime", { lapId: docRef.id });
+			commit("setDbId", docRef.id);
 			console.log("Document written with ID: ", docRef.id);
 		},
 		async getData({ commit }) {
