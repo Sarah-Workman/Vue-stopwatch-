@@ -1,9 +1,10 @@
 <template>
 	<div id="stopwatch - button - container">
-		<StartBtn @click="$emit('start')" text="START" />
-		<StopBtn @click="$emit('stop')" text="STOP" />
-		<ResetBtn @click="$emit('reset')" text="RESET" />
-		<LapBtn @click="$emit('lap')" text="LAP" />
+		<StartBtn @click="$emit('start')" text="Start" />
+		<StopBtn @click="$emit('stop')" text="Stop" />
+		<ResetBtn @click="$emit('reset')" text="Reset" />
+		<LapBtn @click="$emit('lap')" text="Lap" />
+		<BulkDeleteBtn @click="$emit('bulkDelete')" text="Bulk Delete" />
 	</div>
 </template>
 <script>
@@ -11,6 +12,7 @@
 	import StopBtn from "./StopBtn";
 	import ResetBtn from "./ResetBtn";
 	import LapBtn from "./LapBtn";
+	import BulkDeleteBtn from "./BulkDeleteBtn";
 
 	export default {
 		name: "Buttons",
@@ -19,6 +21,7 @@
 			StopBtn,
 			ResetBtn,
 			LapBtn,
+			BulkDeleteBtn,
 		},
 	};
 </script>

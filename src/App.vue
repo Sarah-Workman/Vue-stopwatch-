@@ -1,9 +1,4 @@
 <template>
-	<nav>
-		<router-link to="/">Stopwatch</router-link>
-		<router-link to="/timer">Timer</router-link>
-		<router-link to="/alarm">Alarm</router-link>
-	</nav>
 	<router-view />
 </template>
 <script></script>

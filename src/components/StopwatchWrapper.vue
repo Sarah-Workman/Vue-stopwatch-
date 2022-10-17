@@ -6,12 +6,13 @@
 				@stop="stopBtn"
 				@reset="resetBtn"
 				@lap="lapBtn"
+				@bulkDelete="bulkDeleteBtn"
 			/>
 
 			<Rectangle />
 		</div>
 
-		<LapContainer ref="lapInfo" />
+		<LapContainer @store-checked-ids="someEvent" ref="lapInfo" />
 	</div>
 </template>
 
@@ -29,14 +30,20 @@
 			Rectangle,
 			LapContainer,
 		},
+		data() {
+			return {
+				lapIds: "",
+			};
+		},
 
 		methods: {
 			...mapActions([
 				"incrementSeconds",
 				"addPlaceholderSeconds",
 				"startStopwatch",
+				"bulkDelete",
 			]),
-			...mapMutations(["countSeconds"]),
+			...mapMutations(["countSeconds", "toggleBulkDelete"]),
 			startBtn() {
 				if (this.$store.state.isRunning === false) {
 					this.$store.commit("toggleRunning");
@@ -73,6 +80,18 @@
 				if (this.$store.state.isRunning === true) {
 					this.$store.dispatch("addData");
 				}
+			},
+			bulkDeleteBtn() {
+				debugger;
+				this.$store.commit("toggleBulkDelete");
+				let id = this.lapIds;
+				if (this.$store.state.bulkDeleteOn === false) {
+					this.$store.dispatch("bulkDelete", [{ id: id }]);
+					this.$store.commit("clearCheckedIds");
+				}
+			},
+			someEvent(lapId) {
+				this.lapIds = lapId;
 			},
 		},
 

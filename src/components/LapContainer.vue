@@ -23,16 +23,24 @@
 				v-model="inputSeconds"
 			/>
 			<p v-else>
-				{{ lap.time
-				}}<i @click.self="deleteOne(lap.id)" class="fa-solid fa-trash"></i
-				><i @click.self="editOne(lap.id)" class="fa-solid fa-pen"></i>
+				{{ lap.time }}
 			</p>
+			<!-- when click on the top its deleting the bottom??-->
+			<i @click.self="deleteOne(lap.id)" class="fa-solid fa-trash"></i
+			><i @click.self="editOne(lap.id)" class="fa-solid fa-pen"></i>
+			<input
+				v-show="bulkDeleteOn"
+				type="checkbox"
+				v-model="checked"
+				class="checkboxs"
+				@click="checkedIds(lap.id)"
+			/>
 		</div>
 	</div>
 </template>
 
 <script>
-	import { mapGetters, mapMutations, mapState } from "vuex";
+	import { mapGetters, mapMutations, mapState, mapActions } from "vuex";
 
 	export default {
 		name: "LapContainer",
@@ -45,6 +53,14 @@
 		},
 		methods: {
 			...mapMutations(["setId", "setInputValues"]),
+			...mapActions([
+				"getPlaceholder",
+				"updateLap",
+				"updateApp",
+				"deleteOne",
+				"getDeletedData",
+				"bulkDelete",
+			]),
 
 			editOne(lapId) {
 				this.$store.state.editing = false;
@@ -77,6 +93,10 @@
 
 				this.$store.dispatch("getDeletedData", { lapId: id });
 			},
+			checkedIds(id) {
+				debugger;
+				this.$emit("store-checked-ids", id);
+			},
 		},
 
 		computed: {
@@ -90,6 +110,7 @@
 				"placeHolderMinute",
 				"fireBaseId",
 				"editing",
+				"bulkDeleteOn",
 			]),
 			...mapGetters({
 				getLapById: "getUniqueLapId",
@@ -97,7 +118,7 @@
 			...mapGetters(["nullInputs"]),
 		},
 
-		emits: ["delete-one", "edit-one", "submit-edit", "v-check"],
+		emits: ["store-checked-ids"],
 	};
 </script>
 
@@ -119,24 +140,26 @@
 		margin-top: 1em;
 		& .lap-wrapper {
 			align-content: center;
-		}
 
-		& p {
-			color: black;
-			text-align: left;
-			font-size: 20px;
-			font-family: $fontStyle;
+			& p {
+				color: black;
+				text-align: left;
+				font-size: 20px;
+				font-family: $fontStyle;
 
-			margin: 0em;
+				margin: 0em;
+			}
 		}
 	}
 
 	.lap-container::v-deep .lap-wrapper {
-		& p {
-			display: grid;
-			grid-template-columns: repeat(3, 1fr);
-			padding: 0em;
-		}
+		display: grid;
+		grid-template-columns: repeat(4, 1fr);
+		padding: 0em;
+	}
+	.lap-container::v-deep .lap-wrapper .checkboxs {
+		grid-column-start: 1;
+		grid-row-start: 1;
 	}
 
 	.lap-container::v-deep .editing {

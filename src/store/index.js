@@ -35,7 +35,11 @@ export default createStore({
 		editValue: {},
 		isRunning: false,
 		editing: false,
+		bulkDeleteOn: false,
+		checked: false,
+		deletePath: false,
 		fireBaseIds: [],
+
 		lapId: "",
 		interval: null,
 	},
@@ -136,6 +140,15 @@ export default createStore({
 		toggleEditLapTime(state) {
 			state.editing = !state.editing;
 		},
+		toggleBulkDelete(state) {
+			state.bulkDeleteOn = !state.bulkDeleteOn;
+		},
+		toggleChecked(state) {
+			state.checked = !state.checked;
+		},
+		toggleDeletePath(state) {
+			state.deletePath = !state.deletePath;
+		},
 
 		setLapTime(state, payload) {
 			let [lapHour, lapMinute, lapSecond] = [0, 0, 0];
@@ -150,7 +163,11 @@ export default createStore({
 			let lastItem = state.laps[state.laps.length - 1];
 			let currentItem = state.lapTime.time;
 
-			if (currentItem !== lastItem.time) {
+			if (lastItem !== undefined) {
+				if (currentItem !== lastItem.time) {
+					state.laps.push(state.lapTime);
+				}
+			} else {
 				state.laps.push(state.lapTime);
 			}
 		},
@@ -184,7 +201,20 @@ export default createStore({
 			lap.time = payload.time;
 		},
 		replaceLaps(state, payload) {
-			state.laps.splice(state.laps.indexOf(payload.time), 1);
+			debugger;
+			state.laps.splice(
+				state.laps.findIndex(
+					(object) => object.id == payload.id && object.time == payload.time
+				),
+				1
+			);
+		},
+		deletePath(state, payload) {
+			debugger;
+			state.laps.splice(
+				state.laps.findIndex((object) => object.id == payload.id),
+				1
+			);
 		},
 	},
 	actions: {
@@ -218,12 +248,10 @@ export default createStore({
 				commit("setDbId", doc.id);
 			});
 		},
-		async deleteOne({ state }) {
-			const querySnapshot = await getDocs(collection(db, "Laps"));
-			querySnapshot.forEach((doc) => {
-				state.lapId = doc.id;
-			});
-			deleteDoc(doc(db, "Laps", state.lapId));
+		async deleteOne({ state }, payload) {
+			await getDocs(collection(db, "Laps"));
+
+			deleteDoc(doc(db, "Laps", payload.lapId));
 		},
 
 		async getPlaceholder({ state, commit }) {
@@ -272,7 +300,8 @@ export default createStore({
 				}
 			});
 		},
-		async getDeletedData({ commit }, payload) {
+		async getDeletedData({ commit, state }, payload) {
+			debugger;
 			const querySnapshot = await getDocs(collection(db, "Laps"));
 			querySnapshot.forEach((doc) => {
 				// doc.data() is never undefined for query doc snapshots
@@ -290,7 +319,22 @@ export default createStore({
 						time: `${lapHour}:${lapMinute}:${lapSecond}`,
 					});
 				}
+				if (state.deletePath === true && doc.id === payload.id) {
+					commit("deletePath", { id: payload.id });
+				}
 			});
+		},
+		async bulkDelete({ commit, dispatch }, payload) {
+			debugger;
+			//it thinks i'm splicing. since its an array its acting funny..
+			await deleteDoc(doc(db, "laps", payload));
+
+			if (payload.id !== undefined) {
+				commit("toggleDeletePath");
+			} else {
+				commit("toggleDeletePath");
+			}
+			dispatch("getDeletedData", { id: payload.id });
 		},
 	},
 	modules: {},
