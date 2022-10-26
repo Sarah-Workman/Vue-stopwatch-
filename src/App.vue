@@ -1,12 +1,11 @@
 <template>
-	<router-view />
+	<router-view></router-view>
 </template>
 <script></script>
 
 <style lang="scss">
 	#app {
-		display: flex;
-		margin-top: 3em;
+		margin-top: 1em;
 	}
 </style>
 

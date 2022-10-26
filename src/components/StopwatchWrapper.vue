@@ -1,6 +1,7 @@
 <template>
 	<div id="stopwatchContainer">
 		<div id="stopwatchWrapper">
+			<div @click="signOut">Sign Out</div>
 			<Buttons
 				@start="startBtn"
 				@stop="stopBtn"
@@ -13,6 +14,7 @@
 		</div>
 
 		<LapContainer @store-checked-ids="someEvent" ref="lapInfo" />
+		<div id="snackBar" text="toaster" v-show="toast === true">{{ text }}</div>
 	</div>
 </template>
 
@@ -32,7 +34,7 @@
 		},
 		data() {
 			return {
-				lapIds: "",
+				lapIds: [],
 			};
 		},
 
@@ -42,6 +44,7 @@
 				"addPlaceholderSeconds",
 				"startStopwatch",
 				"bulkDelete",
+				"signOut",
 			]),
 			...mapMutations(["countSeconds", "toggleBulkDelete"]),
 			startBtn() {
@@ -83,20 +86,35 @@
 			},
 			bulkDeleteBtn() {
 				debugger;
+
 				this.$store.commit("toggleBulkDelete");
-				let id = this.lapIds;
+
 				if (this.$store.state.bulkDeleteOn === false) {
-					this.$store.dispatch("bulkDelete", [{ id: id }]);
+					this.$store.dispatch("bulkDelete");
+
 					this.$store.commit("clearCheckedIds");
 				}
 			},
 			someEvent(lapId) {
-				this.lapIds = lapId;
+				this.$store.commit("bulkDeleteIds", lapId);
+			},
+			signOut() {
+				this.$store.dispatch("logOut");
+				//listener is currently not working, but I would want the isAuthed to equal false before pushing to the login screen
+				this.$router.push("/");
 			},
 		},
 
 		computed: {
-			...mapState(["seconds", "minutes", "hours", "outputSeconds", "lapId"]),
+			...mapState([
+				"seconds",
+				"minutes",
+				"hours",
+				"outputSeconds",
+				"lapId",
+				"toaster",
+				"toast",
+			]),
 
 			...mapGetters(["outputSeconds", "outputMinutes", "outputHours"]),
 		},
@@ -120,5 +138,17 @@
 		border-radius: 8px;
 
 		width: fit-content;
+	}
+	#toaster {
+		min-width: 250px;
+		display: flex;
+		align-content: center;
+		color: #fff;
+		background: gray;
+		text-align: center;
+		border-radius: 2px;
+		z-index: 1;
+		font-size: 17px;
+		position: fixed;
 	}
 </style>

@@ -25,7 +25,7 @@
 			<p v-else>
 				{{ lap.time }}
 			</p>
-			<!-- when click on the top its deleting the bottom??-->
+
 			<i @click.self="deleteOne(lap.id)" class="fa-solid fa-trash"></i
 			><i @click.self="editOne(lap.id)" class="fa-solid fa-pen"></i>
 			<input

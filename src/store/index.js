@@ -8,7 +8,17 @@ import {
 	deleteDoc,
 	updateDoc,
 	onSnapshot,
+	query,
+	where,
 } from "firebase/firestore";
+import {
+	getAuth,
+	signInWithEmailAndPassword,
+	onAuthStateChanged,
+	createUserWithEmailAndPassword,
+	signOut,
+} from "firebase/auth";
+import router from "./router";
 import { db } from "@/firebase";
 
 export const getterTypes = Object.freeze({
@@ -32,14 +42,18 @@ export default createStore({
 		placeHolderMinute: "",
 		placeHolderSecond: "",
 		lapTime: "",
+		toaster: "",
 		editValue: {},
+		users: [{ uuid: "gJBO7SzdNsOl6nzfSd2ylJc68Ly2", isAuthed: true }],
+		currentUserId: "gJBO7SzdNsOl6nzfSd2ylJc68Ly2",
 		isRunning: false,
 		editing: false,
 		bulkDeleteOn: false,
 		checked: false,
 		deletePath: false,
+		toast: false,
 		fireBaseIds: [],
-
+		bulkDeleteIds: [],
 		lapId: "",
 		interval: null,
 	},
@@ -91,6 +105,8 @@ export default createStore({
 		},
 		getUniqueLapId: (state) => (lapId) =>
 			state.fireBaseIds.find((id) => id === lapId),
+
+		getUser: (state) => (uuid) => state.users.find((userId) => userId === uuid),
 	},
 	mutations: {
 		countSeconds(state) {
@@ -148,6 +164,9 @@ export default createStore({
 		},
 		toggleDeletePath(state) {
 			state.deletePath = !state.deletePath;
+		},
+		toggleToast(state) {
+			state.toast = !state.toast;
 		},
 
 		setLapTime(state, payload) {
@@ -216,17 +235,39 @@ export default createStore({
 				1
 			);
 		},
+		bulkDeleteIds(state, payload) {
+			state.bulkDeleteIds.push(payload);
+		},
+		toasterMsg(state, payload) {
+			state.toaster = payload;
+		},
+		createUser(state, payload) {
+			state.users.push({ uuid: payload.uuid, isAuthed: payload.isAuthed });
+		},
+		updateUser(state, payload) {
+			let user = state.users.find((user) => user.uuid == payload.uuid);
+			user.isAuthed = payload.isAuthed;
+		},
+		storeCurrentUserId(state, payload) {
+			state.currentUserId = payload;
+		},
 	},
 	actions: {
 		async addData({ state, commit }) {
-			// Add a new document with a generated id.
-			const docRef = await addDoc(collection(db, "Laps"), {
+			debugger;
+
+			const response = await addDoc(collection(db, "Laps"), {
 				lapHour: state.outputhours,
 				lapMinute: state.outputminutes,
 				lapSecond: state.outputseconds,
 			});
-			commit("setLapTime", { lapId: docRef.id });
-			commit("setDbId", docRef.id);
+
+			commit("setLapTime", { lapId: response.id });
+			commit("setDbId", response.id);
+			commit("toasterMsg", "Lap Added");
+			commit("toggleToast");
+			setTimeout(commit("toggleToast"), 3000);
+
 			console.log("Document written with ID: ", docRef.id);
 		},
 		async getData({ commit }) {
@@ -249,6 +290,7 @@ export default createStore({
 			});
 		},
 		async deleteOne({ state }, payload) {
+			debugger;
 			await getDocs(collection(db, "Laps"));
 
 			deleteDoc(doc(db, "Laps", payload.lapId));
@@ -324,17 +366,94 @@ export default createStore({
 				}
 			});
 		},
-		async bulkDelete({ commit, dispatch }, payload) {
+		async bulkDelete({ state, commit, dispatch }) {
 			debugger;
-			//it thinks i'm splicing. since its an array its acting funny..
-			await deleteDoc(doc(db, "laps", payload));
+			let i = 0;
+			const lapRef = collection(db, "Laps");
 
-			if (payload.id !== undefined) {
-				commit("toggleDeletePath");
-			} else {
-				commit("toggleDeletePath");
-			}
-			dispatch("getDeletedData", { id: payload.id });
+			const q = query(lapRef, where("id", "==", state.bulkDeleteIds[0]));
+			const snapShot = await getDocs(q);
+			snapShot.forEach(async (doc) => {
+				console.log(snapShot);
+				await deleteDoc(lapRef, doc.id);
+			});
+		},
+
+		// if (state.bulkDeleteIds !== undefined) {
+		// commit("toggleDeletePath");
+		// } else {
+		// commit("toggleDeletePath");
+		// }
+		// dispatch("getDeletedData", { id: state.bulkDeleteIds.id });
+		// },
+
+		async enroll({ commit }, payload) {
+			debugger;
+			const auth = getAuth();
+			createUserWithEmailAndPassword(auth, payload.email, payload.password)
+				.then((userCredential) => {
+					const user = userCredential.user;
+
+					const isAuthed = true;
+					commit("createUser", { uuid: user.uid, isAuthed: isAuthed });
+					console.log("user created");
+				})
+				.catch((error) => {
+					const errorCode = error.code;
+					const errorMessage = error.message;
+					console.log("error occured in enroll");
+				});
+		},
+		async login({ state }, payload) {
+			debugger;
+			const auth = getAuth();
+			signInWithEmailAndPassword(auth, payload.email, payload.password)
+				.then((userCredential) => {
+					debugger;
+					//to do make api call to get laps for a user
+					//after api call then set laps in state
+					const user = userCredential.user;
+					router.push("/Homescreen");
+					console.log("user login");
+				})
+				.catch((error) => {
+					const errorCode = error.code;
+					const errorMessage = error.message;
+					console.log("error on login");
+				});
+		},
+		async loginChange({ commit }) {
+			debugger;
+			const auth = getAuth();
+			await onAuthStateChanged(auth, (user) => {
+				if (user) {
+					//user is signed in
+					const uid = user.uid;
+					const isAuthed = true;
+					commit("updateUser", { uuid: uid, isAuthed: isAuthed });
+					commit("storeCurrentUserId", uid);
+					console.log("listener updated condition to true based on uuid");
+				} else {
+					//user is signed out
+
+					const isAuthed = false;
+					commit("updateUser", { uuid: uid, isAuthed: isAuthed });
+					console.log("listener updated condition to false based on uuid");
+				}
+			});
+		},
+		logOut({ commit }) {
+			debugger;
+			const auth = getAuth();
+			signOut(auth)
+				.then(() => {
+					//sign-out sucessful
+					console.log("user signed out");
+				})
+				.catch((error) => {
+					//An error happened.
+					console.log("error on sign out");
+				});
 		},
 	},
 	modules: {},
