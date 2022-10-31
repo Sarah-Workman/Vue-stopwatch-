@@ -44,7 +44,7 @@ export default createStore({
 		lapTime: "",
 		toaster: "",
 		editValue: {},
-		Activeusers: [],
+		users: [],
 		currentUserId: "",
 		isRunning: false,
 		editing: false,
@@ -242,7 +242,7 @@ export default createStore({
 			state.toaster = payload;
 		},
 		createUser(state, payload) {
-			state.users.push(payload.uuid);
+			state.users.push(payload.uid);
 		},
 		updateUser(state, payload) {
 			let user = state.users.find((user) => user.uuid == payload.uuid);
@@ -256,14 +256,11 @@ export default createStore({
 		async addData({ state, commit }) {
 			debugger;
 
-			const response = await addDoc(
-				collection(db, "/users" + user.uid, "Laps"),
-				{
-					lapHour: state.outputhours,
-					lapMinute: state.outputminutes,
-					lapSecond: state.outputseconds,
-				}
-			);
+			const response = await addDoc((db, "Laps"), {
+				lapHour: state.outputhours,
+				lapMinute: state.outputminutes,
+				lapSecond: state.outputseconds,
+			});
 
 			commit("setLapTime", { lapId: response.id });
 			commit("setDbId", response.id);
@@ -275,10 +272,10 @@ export default createStore({
 		},
 		async getData({ commit }, user) {
 			debugger;
-			const snapShot = collection(db, "Laps");
-			const q = query(snapShot, where("uid", "==", user.uid));
-			const querySnapshot = await getDocs(q);
-			console.log(q);
+			const snapShot = collection(db, "Users", user.uid, "Laps");
+
+			const querySnapshot = await getDocs(snapShot);
+
 			querySnapshot.forEach((doc) => {
 				// doc.data() is never undefined for query doc snapshots
 				console.log(doc.id, " => ", doc.data());
@@ -290,6 +287,7 @@ export default createStore({
 				let lapSecond = doc.data().lapSecond;
 
 				commit("setLaps", {
+					uid: user.uid,
 					id: doc.id,
 					time: `${lapHour}:${lapMinute}:${lapSecond}`,
 				});
@@ -401,8 +399,8 @@ export default createStore({
 					const user = userCredential.user;
 
 					const isAuthed = true;
-					commit("createUser", { uuid: user.uid });
-					this.$router.push("/Homescreen");
+					commit("createUser", { uid: user.uid });
+
 					console.log("user created");
 				})
 				.catch((error) => {
