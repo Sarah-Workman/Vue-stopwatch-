@@ -18,7 +18,7 @@ import {
 	createUserWithEmailAndPassword,
 	signOut,
 } from "firebase/auth";
-import router from "./router";
+
 import { db } from "@/firebase";
 
 export const getterTypes = Object.freeze({
@@ -44,8 +44,8 @@ export default createStore({
 		lapTime: "",
 		toaster: "",
 		editValue: {},
-		users: [{ uuid: "gJBO7SzdNsOl6nzfSd2ylJc68Ly2", isAuthed: true }],
-		currentUserId: "gJBO7SzdNsOl6nzfSd2ylJc68Ly2",
+		Activeusers: [],
+		currentUserId: "",
 		isRunning: false,
 		editing: false,
 		bulkDeleteOn: false,
@@ -105,8 +105,6 @@ export default createStore({
 		},
 		getUniqueLapId: (state) => (lapId) =>
 			state.fireBaseIds.find((id) => id === lapId),
-
-		getUser: (state) => (uuid) => state.users.find((userId) => userId === uuid),
 	},
 	mutations: {
 		countSeconds(state) {
@@ -190,7 +188,9 @@ export default createStore({
 				state.laps.push(state.lapTime);
 			}
 		},
-
+		clearLaps(state) {
+			state.laps = [];
+		},
 		setLaps(state, lapTimeString) {
 			state.laps.push(lapTimeString);
 		},
@@ -242,7 +242,7 @@ export default createStore({
 			state.toaster = payload;
 		},
 		createUser(state, payload) {
-			state.users.push({ uuid: payload.uuid, isAuthed: payload.isAuthed });
+			state.users.push(payload.uuid);
 		},
 		updateUser(state, payload) {
 			let user = state.users.find((user) => user.uuid == payload.uuid);
@@ -256,22 +256,29 @@ export default createStore({
 		async addData({ state, commit }) {
 			debugger;
 
-			const response = await addDoc(collection(db, "Laps"), {
-				lapHour: state.outputhours,
-				lapMinute: state.outputminutes,
-				lapSecond: state.outputseconds,
-			});
+			const response = await addDoc(
+				collection(db, "/users" + user.uid, "Laps"),
+				{
+					lapHour: state.outputhours,
+					lapMinute: state.outputminutes,
+					lapSecond: state.outputseconds,
+				}
+			);
 
 			commit("setLapTime", { lapId: response.id });
 			commit("setDbId", response.id);
-			commit("toasterMsg", "Lap Added");
-			commit("toggleToast");
-			setTimeout(commit("toggleToast"), 3000);
+			// commit("toasterMsg", "Lap Added");
+			// commit("toggleToast");
+			// setTimeout(commit("toggleToast"), 3000);
 
 			console.log("Document written with ID: ", docRef.id);
 		},
-		async getData({ commit }) {
-			const querySnapshot = await getDocs(collection(db, "Laps"));
+		async getData({ commit }, user) {
+			debugger;
+			const snapShot = collection(db, "Laps");
+			const q = query(snapShot, where("uid", "==", user.uid));
+			const querySnapshot = await getDocs(q);
+			console.log(q);
 			querySnapshot.forEach((doc) => {
 				// doc.data() is never undefined for query doc snapshots
 				console.log(doc.id, " => ", doc.data());
@@ -317,7 +324,7 @@ export default createStore({
 		},
 
 		async updateLap({ state }, payload) {
-			const querySnapshot = doc(db, "Laps", payload.lapId);
+			const querySnapshot = doc(db, "/Users" + user.uid, "Laps", payload.lapId);
 
 			await updateDoc(querySnapshot, {
 				lapHour: state.lapHour,
@@ -326,7 +333,9 @@ export default createStore({
 			});
 		},
 		async updateApp({ commit }, payload) {
-			const querySnapshot = await getDocs(collection(db, "Laps"));
+			const querySnapshot = await getDocs(
+				collection(db, "/Users" + user.uid, "Laps")
+			);
 			querySnapshot.forEach((doc) => {
 				let lapHour = doc.data().lapHour;
 
@@ -361,23 +370,20 @@ export default createStore({
 						time: `${lapHour}:${lapMinute}:${lapSecond}`,
 					});
 				}
-				if (state.deletePath === true && doc.id === payload.id) {
-					commit("deletePath", { id: payload.id });
-				}
 			});
 		},
-		async bulkDelete({ state, commit, dispatch }) {
-			debugger;
-			let i = 0;
-			const lapRef = collection(db, "Laps");
+		// async bulkDelete({ state, commit, dispatch }) {
+		// 	debugger;
+		// 	let i = 0;
+		// 	const lapRef = collection(db, "Laps");
 
-			const q = query(lapRef, where("id", "==", state.bulkDeleteIds[0]));
-			const snapShot = await getDocs(q);
-			snapShot.forEach(async (doc) => {
-				console.log(snapShot);
-				await deleteDoc(lapRef, doc.id);
-			});
-		},
+		// 	const q = query(lapRef, where("id", "==", state.bulkDeleteIds[0]));
+		// 	const snapShot = await getDocs(q);
+		// 	snapShot.forEach(async (doc) => {
+		// 		console.log(snapShot);
+		// 		await deleteDoc(lapRef, doc.id);
+		// 	});
+		// },
 
 		// if (state.bulkDeleteIds !== undefined) {
 		// commit("toggleDeletePath");
@@ -395,7 +401,8 @@ export default createStore({
 					const user = userCredential.user;
 
 					const isAuthed = true;
-					commit("createUser", { uuid: user.uid, isAuthed: isAuthed });
+					commit("createUser", { uuid: user.uid });
+					this.$router.push("/Homescreen");
 					console.log("user created");
 				})
 				.catch((error) => {
@@ -404,7 +411,7 @@ export default createStore({
 					console.log("error occured in enroll");
 				});
 		},
-		async login({ state }, payload) {
+		async login({ dispatch }, payload) {
 			debugger;
 			const auth = getAuth();
 			signInWithEmailAndPassword(auth, payload.email, payload.password)
@@ -412,9 +419,9 @@ export default createStore({
 					debugger;
 					//to do make api call to get laps for a user
 					//after api call then set laps in state
+
 					const user = userCredential.user;
-					router.push("/Homescreen");
-					console.log("user login");
+					dispatch("getData", user);
 				})
 				.catch((error) => {
 					const errorCode = error.code;
@@ -422,23 +429,18 @@ export default createStore({
 					console.log("error on login");
 				});
 		},
-		async loginChange({ commit }) {
+		async loginChange({ commit, dispatch }) {
 			debugger;
 			const auth = getAuth();
-			await onAuthStateChanged(auth, (user) => {
+			onAuthStateChanged(auth, (user) => {
 				if (user) {
 					//user is signed in
-					const uid = user.uid;
-					const isAuthed = true;
-					commit("updateUser", { uuid: uid, isAuthed: isAuthed });
-					commit("storeCurrentUserId", uid);
-					console.log("listener updated condition to true based on uuid");
+					//const isAuthed = true;
+					//commit("storeCurrentUserId", uid);
 				} else {
 					//user is signed out
 
 					const isAuthed = false;
-					commit("updateUser", { uuid: uid, isAuthed: isAuthed });
-					console.log("listener updated condition to false based on uuid");
 				}
 			});
 		},
@@ -448,6 +450,7 @@ export default createStore({
 			signOut(auth)
 				.then(() => {
 					//sign-out sucessful
+					commit("clearLaps");
 					console.log("user signed out");
 				})
 				.catch((error) => {

@@ -34,20 +34,12 @@
 		methods: {
 			login() {
 				debugger;
-				this.$router.push("/Loading");
+
 				this.$store.dispatch("login", {
 					email: this.email,
 					password: this.password,
 				});
-
-				// if (
-				// 	this.$store.state.users[0].uuid === this.$store.state.currentUserId &&
-				// 	this.$store.state.users[0].isAuthed === true
-				// ) {
-				// 	this.$router.push("/Homescreen");
-				// } else {
-				// 	this.$router.push("/");
-				// }
+				this.$router.push("/Homescreen");
 			},
 			enroll() {
 				this.$router.push("/Enroll");
