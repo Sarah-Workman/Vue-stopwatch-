@@ -31,6 +31,7 @@
 					email: this.email,
 					password: this.password,
 				});
+				this.$router.push("/Homescreen");
 
 				// if (
 				// 	this.$store.state.user.uid === this.$store.state.currentUserId &&

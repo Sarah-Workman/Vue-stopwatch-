@@ -97,6 +97,9 @@
 				debugger;
 				this.$emit("store-checked-ids", id);
 			},
+			add(uid) {
+				this.$store.commit("currentUser", uid);
+			},
 		},
 
 		computed: {

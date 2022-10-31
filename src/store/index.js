@@ -3,6 +3,7 @@ import {
 	collection,
 	getDocs,
 	getDoc,
+	setDoc,
 	addDoc,
 	doc,
 	deleteDoc,
@@ -172,7 +173,9 @@ export default createStore({
 			lapHour = state.outputhours;
 			lapMinute = state.outputminutes;
 			lapSecond = state.outputseconds;
+			//
 			state.lapTime = {
+				uid: state.laps[0].uid,
 				id: payload.lapId,
 				time: `${lapHour}:${lapMinute}:${lapSecond}`,
 			};
@@ -248,15 +251,15 @@ export default createStore({
 			let user = state.users.find((user) => user.uuid == payload.uuid);
 			user.isAuthed = payload.isAuthed;
 		},
-		storeCurrentUserId(state, payload) {
+		currentUser(state, payload) {
 			state.currentUserId = payload;
 		},
 	},
 	actions: {
 		async addData({ state, commit }) {
 			debugger;
-
-			const response = await addDoc((db, "Laps"), {
+			const snapShot = doc(db, "Users", state.laps[0].uid);
+			const response = await addDoc(collection(snapShot, "Laps"), {
 				lapHour: state.outputhours,
 				lapMinute: state.outputminutes,
 				lapSecond: state.outputseconds,
@@ -267,9 +270,8 @@ export default createStore({
 			// commit("toasterMsg", "Lap Added");
 			// commit("toggleToast");
 			// setTimeout(commit("toggleToast"), 3000);
-
-			console.log("Document written with ID: ", docRef.id);
 		},
+
 		async getData({ commit }, user) {
 			debugger;
 			const snapShot = collection(db, "Users", user.uid, "Laps");
@@ -322,7 +324,13 @@ export default createStore({
 		},
 
 		async updateLap({ state }, payload) {
-			const querySnapshot = doc(db, "/Users" + user.uid, "Laps", payload.lapId);
+			const querySnapshot = doc(
+				db,
+				"Users",
+				state.laps[0].uid,
+				"Laps",
+				payload.lapId
+			);
 
 			await updateDoc(querySnapshot, {
 				lapHour: state.lapHour,
@@ -332,7 +340,7 @@ export default createStore({
 		},
 		async updateApp({ commit }, payload) {
 			const querySnapshot = await getDocs(
-				collection(db, "/Users" + user.uid, "Laps")
+				collection(db, "Users", state.laps[0].uid, "Laps", payload.lapId)
 			);
 			querySnapshot.forEach((doc) => {
 				let lapHour = doc.data().lapHour;
@@ -343,6 +351,7 @@ export default createStore({
 
 				if (doc.id === payload.lapId) {
 					commit("updateLaps", {
+						uid: state.laps[0].uid,
 						id: payload.lapId,
 						time: `${lapHour}:${lapMinute}:${lapSecond}`,
 					});
@@ -351,7 +360,9 @@ export default createStore({
 		},
 		async getDeletedData({ commit, state }, payload) {
 			debugger;
-			const querySnapshot = await getDocs(collection(db, "Laps"));
+			const querySnapshot = await getDocs(
+				collection(db, "Users", state.laps[0].uid, "Laps")
+			);
 			querySnapshot.forEach((doc) => {
 				// doc.data() is never undefined for query doc snapshots
 				console.log("new data:" + doc.id, " => ", doc.data());
@@ -364,6 +375,7 @@ export default createStore({
 
 				if (doc.id === payload.lapId) {
 					commit("replaceLaps", {
+						uid: state.laps[0].uid,
 						id: payload.lapId,
 						time: `${lapHour}:${lapMinute}:${lapSecond}`,
 					});
@@ -394,20 +406,21 @@ export default createStore({
 		async enroll({ commit }, payload) {
 			debugger;
 			const auth = getAuth();
-			createUserWithEmailAndPassword(auth, payload.email, payload.password)
-				.then((userCredential) => {
-					const user = userCredential.user;
-
-					const isAuthed = true;
-					commit("createUser", { uid: user.uid });
-
-					console.log("user created");
-				})
-				.catch((error) => {
-					const errorCode = error.code;
-					const errorMessage = error.message;
-					console.log("error occured in enroll");
+			createUserWithEmailAndPassword(
+				auth,
+				payload.email,
+				payload.password
+			).then((userCredential) => {
+				const user = userCredential.user;
+				debugger;
+				setDoc(doc(db, "Users", user.uid), {
+					email: user.email,
+					password: payload.password,
+					uid: user.uid,
 				});
+
+				console.log("user created");
+			});
 		},
 		async login({ dispatch }, payload) {
 			debugger;
