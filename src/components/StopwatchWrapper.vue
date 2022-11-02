@@ -3,30 +3,25 @@
 		<p>StopWatchApp</p>
 		<div id="stopwatchWrapper">
 			<Rectangle class="Rectangle" />
-			<Buttons
-				class="Buttons"
-				@start="startStopBtnClick"
-				@reset="resetBtn"
-				@lap="lapBtn"
-			/>
+			<div class="side-bar">
+				<button id="edit" v-show="laps.length > 0">Edit</button>
+				<div @click="signOut" class="signOut">Logoff</div>
+			</div>
 		</div>
-		<div @click="signOut" class="signOut">Logoff</div>
+
 		<LapContainer @store-checked-ids="someEvent" ref="lapInfo" />
 		<div id="snackBar" text="toaster" v-show="toast === true">{{ text }}</div>
 	</div>
 </template>
 
 <script>
-	import Buttons from "./Buttons";
 	import Rectangle from "./Rectangle";
 	import LapContainer from "./LapContainer";
-	import { getterTypes } from "../store/index";
-	import { mapState, mapActions, mapMutations, mapGetters } from "vuex";
+	import { mapState } from "vuex";
 
 	export default {
 		name: "StopWatchWrapper",
 		components: {
-			Buttons,
 			Rectangle,
 			LapContainer,
 		},
@@ -36,87 +31,10 @@
 			};
 		},
 		computed: {
-			...mapState([
-				"seconds",
-				"minutes",
-				"hours",
-				"interval",
-				"lapId",
-				"toaster",
-				"toast",
-				"isRunning",
-				"interval",
-			]),
-
-			...mapGetters(["checkSeconds", "checkMinutes", "checkHours"]),
+			...mapState(["laps"]),
 		},
+
 		methods: {
-			...mapActions([
-				"incrementSeconds",
-				"addPlaceholderSeconds",
-				"startStopwatch",
-				"bulkDelete",
-				"signOut",
-			]),
-			...mapMutations([
-				"countSeconds",
-				"countMinutes",
-				"countHours",
-
-				"setOutputSeconds",
-				"setOutputMinutes",
-				"setOutputHours",
-				"clearSeconds",
-				"clearMinutes",
-				"clearHours",
-				"toggleBulkDelete",
-				"toggleRunning",
-				"clearTimeInterval",
-			]),
-			startStopBtnClick() {
-				debugger;
-
-				if (!this.isRunning) {
-					this.startBtn();
-				} else {
-					this.stopBtn();
-				}
-				this.toggleRunning();
-			},
-			startBtn() {
-				debugger;
-				this.$store.state.interval = setInterval(() => {
-					this.countSeconds();
-					const outputseconds = this.$store.getters.checkSeconds;
-					this.setOutputSeconds(outputseconds);
-					if (this.$store.state.seconds >= 60) {
-						this.$store.commit("countMinutes");
-						this.$store.commit("clearSeconds");
-						const outputminutes = this.$store.getters.checkMinutes;
-						this.$store.commit("setOutputMinutes", outputminutes);
-					} else if (this.$store.state.minutes >= 60) {
-						this.$store.commit("countHours");
-						this.$store.commit("clearMinutes");
-						const outputhours = this.$store.getters.checkHours;
-						this.$store.commit("setOutputHours", outputhours);
-					}
-				}, 1000);
-			},
-			stopBtn() {
-				debugger;
-				this.$store.commit("clearTimeInterval");
-			},
-			resetBtn() {
-				console.log("resetBtn connected");
-				this.$store.commit("toggleRunning");
-				this.$store.commit("clearTimeInterval");
-				this.$store.commit("clear");
-			},
-			lapBtn() {
-				if (this.$store.state.isRunning === true) {
-					this.$store.dispatch("addData");
-				}
-			},
 			// bulkDeleteBtn() {
 			// debugger;
 
@@ -140,14 +58,17 @@
 	};
 </script>
 <style lang="scss" scoped>
-	.Buttons {
+	.side-bar {
 		display: flex;
 		flex-direction: column;
 		grid-column-start: 1;
 		row-gap: 1em;
 		align-self: center;
+		border: thin black;
 	}
-
+	#edit {
+		align-self: flex-start;
+	}
 	::v-deep#stopwatchWrapper {
 		border-radius: 8px;
 
@@ -170,6 +91,7 @@
 		color: blue;
 		font-weight: bolder;
 		cursor: pointer;
+		align-self: flex-end;
 	}
 	#toaster {
 		min-width: 250px;

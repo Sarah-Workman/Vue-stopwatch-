@@ -10,9 +10,6 @@
 		components: {
 			StopWatchWrapper,
 		},
-		mounted() {
-			this.$store.dispatch("getData");
-		},
 	};
 </script>
 <style scoped>
