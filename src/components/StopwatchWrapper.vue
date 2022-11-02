@@ -47,7 +47,7 @@
 			...mapMutations(["countSeconds", "toggleBulkDelete"]),
 			startBtn() {
 				if (this.$store.state.isRunning === false) {
-					// this.$store.commit("toggleRunning");
+					this.$store.commit("toggleRunning");
 					this.$store.state.interval = setInterval(() => {
 						this.$store.commit("countSeconds");
 						const outputseconds = this.$store.getters.outputSeconds;

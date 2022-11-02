@@ -169,15 +169,10 @@ export default createStore({
 		},
 
 		setLapTime(state, payload) {
-			let [lapHour, lapMinute, lapSecond] = [0, 0, 0];
-			lapHour = state.outputhours;
-			lapMinute = state.outputminutes;
-			lapSecond = state.outputseconds;
-			//
 			state.lapTime = {
 				uid: state.laps[0].uid,
 				id: payload.lapId,
-				time: `${lapHour}:${lapMinute}:${lapSecond}`,
+				time: payload.time,
 			};
 
 			let lastItem = state.laps[state.laps.length - 1];
@@ -188,7 +183,7 @@ export default createStore({
 					state.laps.push(state.lapTime);
 				}
 			} else {
-				state.laps.push(state.lapTime);
+				// state.laps.push(state.lapTime); What is this doing?
 			}
 		},
 		clearLaps(state) {
@@ -234,13 +229,13 @@ export default createStore({
 				1
 			);
 		},
-		deletePath(state, payload) {
-			debugger;
-			state.laps.splice(
-				state.laps.findIndex((object) => object.id == payload.id),
-				1
-			);
-		},
+		// deletePath(state, payload) {
+		// debugger;
+		// state.laps.splice(
+		// state.laps.findIndex((object) => object.id == payload.id),
+		// 1
+		// );
+		// },
 		bulkDeleteIds(state, payload) {
 			state.bulkDeleteIds.push(payload);
 		},
@@ -262,13 +257,17 @@ export default createStore({
 		async addData({ state, commit }) {
 			debugger;
 			const snapShot = doc(db, "Users", state.laps[0].uid);
-			const response = await addDoc(collection(snapShot, "Laps"), {
+			let lapTime = {
 				lapHour: state.outputhours,
 				lapMinute: state.outputminutes,
 				lapSecond: state.outputseconds,
+			};
+			const response = await addDoc(collection(snapShot, "Laps"), lapTime);
+			commit("setLapTime", {
+				lapId: response.id,
+				time: `${lapTime.lapHour}:${lapTime.lapMinute}:${lapTime.lapSecond}`,
 			});
 
-			commit("setLapTime", { lapId: response.id });
 			commit("setDbId", response.id);
 			// commit("toasterMsg", "Lap Added");
 			// commit("toggleToast");
@@ -364,26 +363,11 @@ export default createStore({
 		},
 		async getDeletedData({ commit, state }, payload) {
 			debugger;
-			const querySnapshot = await getDocs(
-				collection(db, "Users", state.laps[0].uid, "Laps")
-			);
-			querySnapshot.forEach((doc) => {
-				// doc.data() is never undefined for query doc snapshots
-				console.log("new data:" + doc.id, " => ", doc.data());
 
-				let lapHour = doc.data().lapHour;
-
-				let lapMinute = doc.data().lapMinute;
-
-				let lapSecond = doc.data().lapSecond;
-
-				if (doc.id === payload.lapId) {
-					commit("replaceLaps", {
-						uid: state.laps[0].uid,
-						id: payload.lapId,
-						time: `${lapHour}:${lapMinute}:${lapSecond}`,
-					});
-				}
+			commit("replaceLaps", {
+				uid: state.laps[0].uid,
+				id: payload.lapId,
+				time: payload.time,
 			});
 		},
 		// async bulkDelete({ state, commit, dispatch }) {

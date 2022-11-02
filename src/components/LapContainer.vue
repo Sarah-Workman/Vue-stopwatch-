@@ -26,7 +26,7 @@
 				{{ lap.time }}
 			</p>
 
-			<i @click.self="deleteOne(lap.id)" class="fa-solid fa-trash"></i
+			<i @click.self="deleteOne(lap.id, lap.time)" class="fa-solid fa-trash"></i
 			><i @click.self="editOne(lap.id)" class="fa-solid fa-pen"></i>
 			<input
 				v-show="bulkDeleteOn"
@@ -86,12 +86,12 @@
 
 				this.$store.state.editing = true;
 			},
-			deleteOne(id) {
+			deleteOne(id, time) {
 				console.log(id);
 				this.$store.dispatch("deleteOne", { lapId: id });
 				this.$store.state.editing = true;
 
-				this.$store.dispatch("getDeletedData", { lapId: id });
+				this.$store.dispatch("getDeletedData", { lapId: id, time: time });
 			},
 			checkedIds(id) {
 				debugger;
