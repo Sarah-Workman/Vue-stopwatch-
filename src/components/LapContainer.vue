@@ -71,6 +71,7 @@
 				this.$store.dispatch("getPlaceholder");
 			},
 			update(id) {
+				debugger;
 				this.$store.commit("setInputValues", {
 					lapHour: this.inputHours,
 					lapMinute: this.inputMinutes,
@@ -82,7 +83,6 @@
 				this.$store.dispatch("updateLap", {
 					lapId: id,
 				});
-				this.$store.dispatch("updateApp", { lapId: id });
 
 				this.$store.state.editing = true;
 			},

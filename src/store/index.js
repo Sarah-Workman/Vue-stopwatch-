@@ -2,15 +2,11 @@ import { createStore } from "vuex";
 import {
 	collection,
 	getDocs,
-	getDoc,
 	setDoc,
 	addDoc,
 	doc,
 	deleteDoc,
 	updateDoc,
-	onSnapshot,
-	query,
-	where,
 } from "firebase/firestore";
 import {
 	getAuth,
@@ -35,6 +31,7 @@ export default createStore({
 		outputseconds: "00",
 		outputminutes: "00",
 		outputhours: "00",
+
 		lapHour: "",
 		lapMinute: "",
 		lapSecond: "",
@@ -45,18 +42,17 @@ export default createStore({
 		lapTime: "",
 		toaster: "",
 		editValue: {},
-		users: [],
-		currentUserId: "",
+
+		currentUser: "",
 		isRunning: false,
 		editing: false,
 		bulkDeleteOn: false,
-		checked: false,
-		deletePath: false,
+
 		toast: false,
 		fireBaseIds: [],
 		bulkDeleteIds: [],
 		lapId: "",
-		interval: null,
+		interval: undefined,
 	},
 	getters: {
 		secondLength(state) {
@@ -68,17 +64,17 @@ export default createStore({
 		hourLength(state) {
 			return state.hours.toString.length;
 		},
-		outputSeconds(state) {
+		checkSeconds(state) {
 			const outputSeconds =
 				state.seconds < 10 ? "0" + state.seconds : state.seconds;
 			return outputSeconds;
 		},
-		outputMinutes(state) {
+		checkMinutes(state) {
 			const outputminutes =
 				state.minutes < 10 ? "0" + state.minutes : state.minutes;
 			return outputminutes;
 		},
-		outputHours(state) {
+		checkHours(state) {
 			const outputHours = state.hours < 10 ? "0" + state.hours : state.hours;
 			return outputHours;
 		},
@@ -137,6 +133,7 @@ export default createStore({
 		},
 
 		clearTimeInterval(state) {
+			debugger;
 			clearInterval(state.interval);
 		},
 
@@ -161,16 +158,13 @@ export default createStore({
 		toggleChecked(state) {
 			state.checked = !state.checked;
 		},
-		toggleDeletePath(state) {
-			state.deletePath = !state.deletePath;
-		},
+
 		toggleToast(state) {
 			state.toast = !state.toast;
 		},
 
 		setLapTime(state, payload) {
 			state.lapTime = {
-				uid: state.laps[0].uid,
 				id: payload.lapId,
 				time: payload.time,
 			};
@@ -183,7 +177,7 @@ export default createStore({
 					state.laps.push(state.lapTime);
 				}
 			} else {
-				// state.laps.push(state.lapTime); What is this doing?
+				state.laps.push(state.lapTime);
 			}
 		},
 		clearLaps(state) {
@@ -221,10 +215,7 @@ export default createStore({
 			debugger;
 			state.laps.splice(
 				state.laps.findIndex(
-					(object) =>
-						object.id == payload.id &&
-						object.time == payload.time &&
-						object.uid == payload.uid
+					(object) => object.id == payload.id && object.time == payload.time
 				),
 				1
 			);
@@ -242,21 +233,15 @@ export default createStore({
 		toasterMsg(state, payload) {
 			state.toaster = payload;
 		},
-		createUser(state, payload) {
-			state.users.push(payload.uid);
-		},
-		updateUser(state, payload) {
-			let user = state.users.find((user) => user.uuid == payload.uuid);
-			user.isAuthed = payload.isAuthed;
-		},
-		currentUser(state, payload) {
-			state.currentUserId = payload;
+
+		setCurrentUser(state, payload) {
+			state.currentUser = payload;
 		},
 	},
 	actions: {
 		async addData({ state, commit }) {
 			debugger;
-			const snapShot = doc(db, "Users", state.laps[0].uid);
+			const snapShot = doc(db, "Users", state.currentUser.uid);
 			let lapTime = {
 				lapHour: state.outputhours,
 				lapMinute: state.outputminutes,
@@ -276,32 +261,33 @@ export default createStore({
 
 		async getData({ commit }, user) {
 			debugger;
+
 			const snapShot = collection(db, "Users", user.uid, "Laps");
+			if (snapShot !== null) {
+				const querySnapshot = await getDocs(snapShot);
 
-			const querySnapshot = await getDocs(snapShot);
+				querySnapshot.forEach((doc) => {
+					// doc.data() is never undefined for query doc snapshots
+					console.log(doc.id, " => ", doc.data());
 
-			querySnapshot.forEach((doc) => {
-				// doc.data() is never undefined for query doc snapshots
-				console.log(doc.id, " => ", doc.data());
+					let lapHour = doc.data().lapHour;
 
-				let lapHour = doc.data().lapHour;
+					let lapMinute = doc.data().lapMinute;
 
-				let lapMinute = doc.data().lapMinute;
+					let lapSecond = doc.data().lapSecond;
 
-				let lapSecond = doc.data().lapSecond;
-
-				commit("setLaps", {
-					uid: user.uid,
-					id: doc.id,
-					time: `${lapHour}:${lapMinute}:${lapSecond}`,
+					commit("setLaps", {
+						id: doc.id,
+						time: `${lapHour}:${lapMinute}:${lapSecond}`,
+					});
+					commit("setDbId", doc.id);
 				});
-				commit("setDbId", doc.id);
-			});
+			} //maybe a toaster to add data?
 		},
 		async deleteOne({ state }, payload) {
 			debugger;
 			// await getDocs(collection(db, "Laps"));
-			const docRef = collection(db, "Users", state.laps[0].uid, "Laps");
+			const docRef = collection(db, "Users", state.currentUser.uid, "Laps");
 
 			deleteDoc(doc(docRef, payload.lapId));
 		},
@@ -326,46 +312,35 @@ export default createStore({
 			});
 		},
 
-		async updateLap({ state }, payload) {
+		async updateLap({ state, commit }, payload) {
 			const querySnapshot = doc(
 				db,
 				"Users",
-				state.laps[0].uid,
+				state.currentUser.uid,
 				"Laps",
 				payload.lapId
 			);
 
-			await updateDoc(querySnapshot, {
+			let updateTime = {
 				lapHour: state.lapHour,
 				lapMinute: state.lapMinute,
 				lapSecond: state.lapSecond,
+			};
+
+			await updateDoc(querySnapshot, {
+				lapHour: updateTime.lapHour,
+				lapMinute: updateTime.lapMinute,
+				lapMinute: updateTime.lapHour,
+			});
+			commit("updateLaps", {
+				time: `${updateTime.lapHour}:${updateTime.lapMinute}:${updateTime.lapSecond}`,
+
+				id: payload.lapId,
 			});
 		},
-		async updateApp({ commit }, payload) {
-			const querySnapshot = await getDocs(
-				collection(db, "Users", state.laps[0].uid, "Laps", payload.lapId)
-			);
-			querySnapshot.forEach((doc) => {
-				let lapHour = doc.data().lapHour;
 
-				let lapMinute = doc.data().lapMinute;
-
-				let lapSecond = doc.data().lapSecond;
-
-				if (doc.id === payload.lapId) {
-					commit("updateLaps", {
-						uid: state.laps[0].uid,
-						id: payload.lapId,
-						time: `${lapHour}:${lapMinute}:${lapSecond}`,
-					});
-				}
-			});
-		},
 		async getDeletedData({ commit, state }, payload) {
-			debugger;
-
 			commit("replaceLaps", {
-				uid: state.laps[0].uid,
 				id: payload.lapId,
 				time: payload.time,
 			});
@@ -392,34 +367,27 @@ export default createStore({
 		// },
 
 		async enroll({ commit }, payload) {
-			debugger;
 			const auth = getAuth();
 			createUserWithEmailAndPassword(
 				auth,
 				payload.email,
 				payload.password
-			).then((userCredential) => {
+			).then(async (userCredential) => {
 				const user = userCredential.user;
-				debugger;
-				setDoc(doc(db, "Users", user.uid), {
-					email: user.email,
-					password: payload.password,
-					uid: user.uid,
-				});
 
-				console.log("user created");
+				await setDoc(doc(db, "Users", user.uid), { email: user.email });
+				commit("setCurrentUser", user);
 			});
 		},
-		async login({ dispatch }, payload) {
-			debugger;
+		async login({ commit, dispatch }, payload) {
 			const auth = getAuth();
 			signInWithEmailAndPassword(auth, payload.email, payload.password)
 				.then((userCredential) => {
-					debugger;
 					//to do make api call to get laps for a user
 					//after api call then set laps in state
 
 					const user = userCredential.user;
+					commit("setCurrentUser", user);
 					dispatch("getData", user);
 				})
 				.catch((error) => {
@@ -429,7 +397,6 @@ export default createStore({
 				});
 		},
 		async loginChange({ commit, dispatch }) {
-			debugger;
 			const auth = getAuth();
 			onAuthStateChanged(auth, (user) => {
 				if (user) {
@@ -444,12 +411,12 @@ export default createStore({
 			});
 		},
 		logOut({ commit }) {
-			debugger;
 			const auth = getAuth();
 			signOut(auth)
 				.then(() => {
 					//sign-out sucessful
 					commit("clearLaps");
+					commit("clear");
 					console.log("user signed out");
 				})
 				.catch((error) => {

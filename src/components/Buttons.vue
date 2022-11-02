@@ -1,6 +1,6 @@
 <template>
 	<div id="stopwatch - button - container">
-		<StartBtn @click="$emit('start')" />
+		<StartBtn @start="$emit('start')" />
 
 		<ResetBtn @click="$emit('reset')" text="Reset" />
 		<LapBtn @click="$emit('lap')" text="Lap" />

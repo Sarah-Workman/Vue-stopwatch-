@@ -1,7 +1,5 @@
 <template>
-	<button @click="$emit(' start ')" id="StartBtn">
-		{{ isRunning === true ? "Stop" : "Start" }}
-	</button>
+	<button @click="$emit('start')" id="StartBtn">{{ getBtnTxt }}</button>
 </template>
 <script>
 	import { mapState } from "vuex";
@@ -9,7 +7,10 @@
 		name: "StartBtn",
 		props: {},
 		computed: {
-			...mapState("isRunning"),
+			...mapState(["isRunning"]),
+			getBtnTxt() {
+				return this.isRunning ? "Stop" : "Start";
+			},
 		},
 	};
 </script>
