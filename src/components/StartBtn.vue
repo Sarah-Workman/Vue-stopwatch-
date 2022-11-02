@@ -1,31 +1,33 @@
 <template>
-	<button @click="$emit(' start ')" id="StartBtn">{{ text }}</button>
+	<button @click="$emit(' start ')" id="StartBtn">
+		{{ isRunning === true ? "Stop" : "Start" }}
+	</button>
 </template>
 <script>
+	import { mapState } from "vuex";
 	export default {
 		name: "StartBtn",
-		props: {
-			text: String,
+		props: {},
+		computed: {
+			...mapState("isRunning"),
 		},
 	};
 </script>
 <style lang="scss" scoped>
 	$shadows: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
-	$fontStyle: Arial, Helvetica, sans-serif;
+
 	@mixin stopwatchBtns {
-		background-color: #0ff4c6;
+		background-color: rgb(11, 196, 11);
 		box-shadow: $shadows;
 		border: none;
 		color: white;
 		text-align: center;
 		text-decoration: none;
 		font-size: 20px;
-		font-family: $fontStyle;
+		font-family: Helvetica Neue;
 	}
 
 	#StartBtn {
 		@include stopwatchBtns();
-		grid-row-start: 1;
-		grid-column-start: 1;
 	}
 </style>

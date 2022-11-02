@@ -25,7 +25,5 @@
 
 	#ResetBtn {
 		@include stopwatchBtns();
-		grid-row-start: 1;
-		grid-column-start: 3;
 	}
 </style>

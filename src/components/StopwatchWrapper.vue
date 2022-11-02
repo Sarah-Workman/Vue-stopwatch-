@@ -1,18 +1,16 @@
 <template>
 	<div id="stopwatchContainer">
+		<p>StopWatchApp</p>
 		<div id="stopwatchWrapper">
-			<div @click="signOut">Sign Out</div>
+			<Rectangle class="Rectangle" />
 			<Buttons
+				class="Buttons"
 				@start="startBtn"
-				@stop="stopBtn"
 				@reset="resetBtn"
 				@lap="lapBtn"
-				@bulkDelete="bulkDeleteBtn"
 			/>
-
-			<Rectangle />
 		</div>
-
+		<div @click="signOut" class="signOut">Logoff</div>
 		<LapContainer @store-checked-ids="someEvent" ref="lapInfo" />
 		<div id="snackBar" text="toaster" v-show="toast === true">{{ text }}</div>
 	</div>
@@ -49,7 +47,7 @@
 			...mapMutations(["countSeconds", "toggleBulkDelete"]),
 			startBtn() {
 				if (this.$store.state.isRunning === false) {
-					this.$store.commit("toggleRunning");
+					// this.$store.commit("toggleRunning");
 					this.$store.state.interval = setInterval(() => {
 						this.$store.commit("countSeconds");
 						const outputseconds = this.$store.getters.outputSeconds;
@@ -121,23 +119,36 @@
 	};
 </script>
 <style lang="scss" scoped>
-	Buttons {
-		display: grid;
-		grid-template-columns: repeat(3, 1fr);
-		gap: 1em;
+	.Buttons {
+		display: flex;
+		flex-direction: column;
+		grid-column-start: 1;
+		row-gap: 1em;
+		align-self: center;
 	}
-	#stopwatchWrapper {
-		background-color: #defff2;
+
+	::v-deep#stopwatchWrapper {
 		border-radius: 8px;
 
 		width: fit-content;
 		padding-bottom: 1em;
 		padding-right: 2em;
+		display: grid;
+		grid-template-columns: 1fr, 2fr;
+		grid-auto-flow: column;
 	}
 	#stopwatchContainer {
 		border-radius: 8px;
 
 		width: fit-content;
+	}
+	p {
+		font: normal normal bold 20px/25px Helvetica Neue;
+	}
+	.signOut {
+		color: blue;
+		font-weight: bolder;
+		cursor: pointer;
 	}
 	#toaster {
 		min-width: 250px;

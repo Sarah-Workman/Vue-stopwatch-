@@ -25,7 +25,5 @@
 
 	#LapBtn {
 		@include stopwatchBtns();
-		grid-row-start: 2;
-		grid-column-start: 1;
 	}
 </style>

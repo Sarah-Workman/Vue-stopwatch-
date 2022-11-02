@@ -27,7 +27,5 @@
 
 	#bulkDelete {
 		@include stopwatchBtns();
-		grid-row-start: 2;
-		grid-column-start: 3;
 	}
 </style>

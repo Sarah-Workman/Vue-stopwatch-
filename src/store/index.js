@@ -226,7 +226,10 @@ export default createStore({
 			debugger;
 			state.laps.splice(
 				state.laps.findIndex(
-					(object) => object.id == payload.id && object.time == payload.time
+					(object) =>
+						object.id == payload.id &&
+						object.time == payload.time &&
+						object.uid == payload.uid
 				),
 				1
 			);
@@ -298,9 +301,10 @@ export default createStore({
 		},
 		async deleteOne({ state }, payload) {
 			debugger;
-			await getDocs(collection(db, "Laps"));
+			// await getDocs(collection(db, "Laps"));
+			const docRef = collection(db, "Users", state.laps[0].uid, "Laps");
 
-			deleteDoc(doc(db, "Laps", payload.lapId));
+			deleteDoc(doc(docRef, payload.lapId));
 		},
 
 		async getPlaceholder({ state, commit }) {

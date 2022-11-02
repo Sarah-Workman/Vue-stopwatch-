@@ -28,27 +28,22 @@
 		display: flex;
 		justify-content: center;
 		align-content: flex-end;
-		background-color: rgb(92, 91, 91);
-		margin-top: 1em;
-		height: 2em;
+
 		width: fit-content;
 		padding: 1em;
 	}
 	#textWrapper {
-		color: white;
+		color: black;
 
-		font-size: larger;
-		font-family: $fontStyle;
+		font-size: 115px;
+		font-family: Helvetica Neue;
+		font-weight: bold;
 	}
 	.rectangle-container {
 		@include flex();
 		width: 100%;
 	}
-	#timerTextWrapper span {
-		color: white;
-		font-size: 70px;
-		font-family: $fontStyle;
-	}
+
 	.rectangle p {
 		margin: 0;
 		padding-top: 0.5em;

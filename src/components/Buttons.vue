@@ -1,10 +1,9 @@
 <template>
 	<div id="stopwatch - button - container">
-		<StartBtn @click="$emit('start')" text="Start" />
-		<StopBtn @click="$emit('stop')" text="Stop" />
+		<StartBtn @click="$emit('start')" />
+
 		<ResetBtn @click="$emit('reset')" text="Reset" />
 		<LapBtn @click="$emit('lap')" text="Lap" />
-		<BulkDeleteBtn @click="$emit('bulkDelete')" text="Bulk Delete" />
 	</div>
 </template>
 <script>
@@ -13,6 +12,7 @@
 	import ResetBtn from "./ResetBtn";
 	import LapBtn from "./LapBtn";
 	import BulkDeleteBtn from "./BulkDeleteBtn";
+	import { mapState } from "vuex";
 
 	export default {
 		name: "Buttons",
@@ -23,14 +23,10 @@
 			LapBtn,
 			BulkDeleteBtn,
 		},
+
+		computed: {
+			...mapState(["isRunning"]),
+		},
 	};
 </script>
-<style lang="scss" scoped>
-	div {
-		width: 100%;
-		padding: 1em;
-		display: grid;
-		grid-template-columns: repeat(3, 1fr);
-		gap: 2em;
-	}
-</style>
+<style lang="scss" scoped></style>
