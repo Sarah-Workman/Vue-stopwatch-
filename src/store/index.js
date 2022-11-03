@@ -45,6 +45,7 @@ export default createStore({
 
 		currentUser: "",
 		isRunning: false,
+		isPasswordVisable: false,
 		editing: false,
 		bulkDeleteOn: false,
 
@@ -155,8 +156,8 @@ export default createStore({
 		toggleBulkDelete(state) {
 			state.bulkDeleteOn = !state.bulkDeleteOn;
 		},
-		toggleChecked(state) {
-			state.checked = !state.checked;
+		toggleIsPasswordVisable(state) {
+			state.isPasswordVisable = !state.isPasswordVisable;
 		},
 
 		toggleToast(state) {

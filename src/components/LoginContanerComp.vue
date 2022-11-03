@@ -6,15 +6,24 @@
 		<div class="loginWrapper">
 			<div class="loginForm">
 				<input type="email" id="email" v-model="email" placeholder="Email" />
+
 				<div class="passwordWrapper">
 					<input
-						type="password"
+						:type="isPasswordVisable ? 'text' : 'password'"
 						id="password"
 						v-model="password"
 						placeholder="Password"
 					/>
-					<i class="fa-solid fa-eye"></i>
+
+					<i
+						:class="
+							isPasswordVisable ? 'fa-solid fa-eye-slash' : 'fa-solid fa-eye'
+						"
+						@click="visablePassword"
+					>
+					</i>
 				</div>
+
 				<button type="submit" @click="login">Login</button>
 			</div>
 			<div class="enrollLink" @click="enroll">First Time User, Enroll Now!</div>
@@ -23,6 +32,7 @@
 </template>
 
 <script>
+	import { mapState } from "vuex";
 	export default {
 		name: "loginContainer",
 		data() {
@@ -44,6 +54,13 @@
 			enroll() {
 				this.$router.push("/Enroll");
 			},
+			visablePassword() {
+				debugger;
+				this.$store.commit("toggleIsPasswordVisable");
+			},
+		},
+		computed: {
+			...mapState(["isPasswordVisable"]),
 		},
 	};
 </script>
@@ -91,6 +108,7 @@
 	}
 	button {
 		margin-top: 3em;
+		cursor: pointer;
 	}
 	#email {
 		margin-top: 10em;
@@ -98,11 +116,7 @@
 
 	.passwordWrapper {
 		margin-top: 0.5em;
-		& i {
-			position: relative;
-
-			padding-top: 0.1em;
-		}
+		display: flex;
 	}
 	#app {
 		display: flex;
@@ -116,5 +130,19 @@
 		letter-spacing: 0;
 		display: flex;
 		justify-content: center;
+	}
+	i {
+		cursor: pointer;
+		display: flex;
+		justify-content: flex-start;
+	}
+
+	.fa-solid .fa-eye-slash {
+		z-index: 3;
+	}
+	.fa-solid .fa-eye {
+		position: absolute;
+		z-index: 2;
+		padding-top: 0.1em;
 	}
 </style>
