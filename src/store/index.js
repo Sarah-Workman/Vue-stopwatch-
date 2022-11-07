@@ -47,6 +47,7 @@ export default createStore({
 		isRunning: false,
 		isPasswordVisable: false,
 		isEditing: false,
+		isUpdating: false,
 		isSelectActive: false,
 		bulkDeleteOn: false,
 
@@ -164,6 +165,9 @@ export default createStore({
 
 		toggleToast(state) {
 			state.toast = !state.toast;
+		},
+		toggleIsUpdating(state) {
+			state.isUpdating = !state.isUpdating;
 		},
 
 		setLapTime(state, payload) {
