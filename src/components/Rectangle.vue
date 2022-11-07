@@ -5,20 +5,17 @@
 				{{ outputhours }}:{{ outputminutes }}:{{ outputseconds }}
 			</p>
 		</div>
-		<Buttons
-			class="buttons"
-			@start="startStopBtnClick"
-			@reset="resetBtn"
-			@lap="lapBtn"
-		/>
+		<div id="buttonWrapper">
+			<start-btn @start="startStopBtnClick" Id="startStopBtn" />
+		</div>
 	</div>
 </template>
 <script>
-	import Buttons from "./Buttons";
 	import { mapActions, mapGetters, mapMutations, mapState } from "vuex";
+	import StartBtn from "./StartBtn.vue";
 	export default {
 		name: "Rectangle",
-		components: { Buttons },
+		components: { StartBtn },
 		methods: {
 			...mapActions([
 				"incrementSeconds",
@@ -75,17 +72,6 @@
 				debugger;
 				this.$store.commit("clearTimeInterval");
 			},
-			resetBtn() {
-				console.log("resetBtn connected");
-				this.$store.commit("toggleRunning");
-				this.$store.commit("clearTimeInterval");
-				this.$store.commit("clear");
-			},
-			lapBtn() {
-				if (this.$store.state.isRunning === true) {
-					this.$store.dispatch("addData");
-				}
-			},
 		},
 		computed: {
 			...mapState([
@@ -123,15 +109,17 @@
 		padding: 1em;
 	}
 	#textWrapper {
-		color: black;
-
-		font-size: 115px;
-		font-family: Helvetica Neue;
+		color: #000000;
+		opacity: 1;
+		width: 557px;
+		height: 170px;
+		font: normal normal bold 143px/174px Helvetica Neue;
+		letter-spacing: opx;
 		font-weight: bold;
+		text-align: left;
 	}
 	.rectangle-container {
 		@include flex();
-		width: 100%;
 		flex-direction: column;
 	}
 
@@ -139,10 +127,18 @@
 		margin: 0;
 		padding-top: 0.5em;
 	}
-	.buttons {
+	#buttonWrapper {
 		display: flex;
-		align-content: center;
 		justify-content: center;
-		column-gap: 0.5em;
+		align-content: center;
+	}
+	#startStopBtn {
+		background: #20bf55 0% 0% no-repeat padding-box;
+		box-shadow: 6px 4px 3px #00000029;
+		border: 1px solid #707070;
+		border-radius: 4px;
+		opacity: 1;
+		width: 209px;
+		height: 61px;
 	}
 </style>

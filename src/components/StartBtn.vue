@@ -1,5 +1,11 @@
 <template>
-	<button @click="$emit('start')" id="StartBtn">{{ getBtnTxt }}</button>
+	<button
+		@click="$emit('start')"
+		id="StartBtn"
+		v-bind="{ stopBtnStyle: isRunning === true }"
+	>
+		{{ getBtnTxt }}
+	</button>
 </template>
 <script>
 	import { mapState } from "vuex";
@@ -17,8 +23,16 @@
 <style lang="scss" scoped>
 	$shadows: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
 
-	@mixin stopwatchBtns {
-		background-color: rgb(11, 196, 11);
+	#StartBtn {
+		background: #20bf55 0% 0% no-repeat padding-box;
+		box-shadow: 6px 4px 3px #00000029;
+		border: 1px solid #707070;
+		border-radius: 4px;
+		opacity: 1;
+	}
+
+	.stopBtnStyle {
+		background-color: rgb(196, 42, 11);
 		box-shadow: $shadows;
 		border: none;
 		color: white;
@@ -26,9 +40,7 @@
 		text-decoration: none;
 		font-size: 20px;
 		font-family: Helvetica Neue;
-	}
-
-	#StartBtn {
-		@include stopwatchBtns();
+		width: 209px;
+		height: 61px;
 	}
 </style>

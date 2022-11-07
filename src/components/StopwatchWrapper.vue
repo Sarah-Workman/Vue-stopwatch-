@@ -4,26 +4,37 @@
 		<div id="stopwatchWrapper">
 			<Rectangle class="Rectangle" />
 			<div class="side-bar">
-				<button id="edit" v-show="laps.length > 0">Edit</button>
-				<div @click="signOut" class="signOut">Logoff</div>
+				<button id="edit" v-show="laps.length > 0" @click="editing">
+					Edit
+				</button>
+				<!-- <div @click="signOut" class="signOut">Logoff</div> -->
+				<div>
+					<LapBtn ref="lapInfo" @lap="lapBtn" />
+					<ResetBtn @reset="resetBtn" />
+				</div>
 			</div>
 		</div>
 
-		<LapContainer @store-checked-ids="someEvent" ref="lapInfo" />
+		<LapContainer />
 		<div id="snackBar" text="toaster" v-show="toast === true">{{ text }}</div>
 	</div>
 </template>
 
 <script>
 	import Rectangle from "./Rectangle";
-	import LapContainer from "./LapContainer";
+
 	import { mapState } from "vuex";
+	import LapBtn from "./LapBtn.vue";
+	import LapContainer from "./LapContainer.vue";
+	import ResetBtn from "./ResetBtn.vue";
 
 	export default {
 		name: "StopWatchWrapper",
 		components: {
 			Rectangle,
 			LapContainer,
+			LapBtn,
+			ResetBtn,
 		},
 		data() {
 			return {
@@ -31,7 +42,7 @@
 			};
 		},
 		computed: {
-			...mapState(["laps"]),
+			...mapState(["laps", "isEditing"]),
 		},
 
 		methods: {
@@ -46,8 +57,19 @@
 			// this.$store.commit("clearCheckedIds");
 			// }
 			// },
-			someEvent(lapId) {
-				this.$store.commit("bulkDeleteIds", lapId);
+			lapBtn() {
+				if (this.$store.state.isRunning === true) {
+					this.$store.dispatch("addData");
+				}
+			},
+			resetBtn() {
+				console.log("resetBtn connected");
+				this.$store.commit("toggleRunning");
+				this.$store.commit("clearTimeInterval");
+				this.$store.commit("clear");
+			},
+			editing() {
+				this.$store.commit("toggleIsEditing");
 			},
 			signOut() {
 				this.$store.dispatch("logOut");
@@ -59,16 +81,26 @@
 </script>
 <style lang="scss" scoped>
 	.side-bar {
+		row-gap: 10em;
+		align-self: center;
+
+		justify-items: start;
+
+		grid-column-start: 1;
 		display: flex;
 		flex-direction: column;
-		grid-column-start: 1;
-		row-gap: 1em;
-		align-self: center;
-		border: thin black;
 	}
+
 	#edit {
-		align-self: flex-start;
+		background: #008aac7c 0% 0% no-repeat padding-box;
+		box-shadow: 6px 4px 3px #00000029;
+		border: 1px solid #000000;
+		border-radius: 4px;
+		opacity: 1;
+		width: 155px;
+		height: 43px;
 	}
+
 	::v-deep#stopwatchWrapper {
 		border-radius: 8px;
 

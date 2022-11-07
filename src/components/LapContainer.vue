@@ -1,8 +1,14 @@
 <template>
 	<div class="lap-container">
-		<div v-for="lap in laps" :key="lap.id" class="lap-wrapper">
+		<div
+			v-for="lap in laps"
+			:key="lap.id"
+			class="lap-wrapper"
+			@click="isEditing ? bulkDelete(lap.id) : null"
+		>
 			<input
 				v-if="lap.id === lapId && editing === false"
+				required=""
 				:placeholder="placeHolderHour"
 				:class="{ editing: lap.id === lapId }"
 				@keyup.enter="update(lap.id)"
@@ -10,6 +16,7 @@
 			/>
 			<input
 				v-if="lap.id === lapId && editing === false"
+				required=""
 				:placeholder="placeHolderMinute"
 				:class="{ editing: lap.id === lapId }"
 				@keyup.enter="update(lap.id)"
@@ -17,6 +24,7 @@
 			/>
 			<input
 				v-if="lap.id === lapId && editing === false"
+				required=""
 				:placeholder="placeHolderSecond"
 				:class="{ editing: lap.id === lapId && editing === false }"
 				@keyup.enter="update(lap.id)"
@@ -26,15 +34,16 @@
 				{{ lap.time }}
 			</p>
 
-			<i @click.self="deleteOne(lap.id, lap.time)" class="fa-solid fa-trash"></i
-			><i @click.self="editOne(lap.id)" class="fa-solid fa-pen"></i>
-			<input
-				v-show="bulkDeleteOn"
-				type="checkbox"
-				v-model="checked"
-				class="checkboxs"
-				@click="checkedIds(lap.id)"
-			/>
+			<i
+				@click.self="deleteOne(lap.id, lap.time)"
+				class="fa-solid fa-trash"
+				v-if="isEditing"
+			></i
+			><i
+				@click.self="editOne(lap.id)"
+				class="fa-solid fa-pen"
+				v-if="isEditing"
+			></i>
 		</div>
 	</div>
 </template>
@@ -52,7 +61,7 @@
 			};
 		},
 		methods: {
-			...mapMutations(["setId", "setInputValues"]),
+			...mapMutations(["setId", "setInputValues", "setSelectedIds"]),
 			...mapActions([
 				"getPlaceholder",
 				"updateLap",
@@ -100,6 +109,11 @@
 			add(uid) {
 				this.$store.commit("currentUser", uid);
 			},
+			bulkDelete(id) {
+				debugger;
+				console.log(`${id} was selected`);
+				this.$store.commit("setSelectedIds", id);
+			},
 		},
 
 		computed: {
@@ -114,6 +128,8 @@
 				"fireBaseId",
 				"editing",
 				"bulkDeleteOn",
+				"isEditing",
+				"selectedLaps",
 			]),
 			...mapGetters({
 				getLapById: "getUniqueLapId",
@@ -139,18 +155,28 @@
 		margin: auto;
 
 		align-content: flex-start;
-		flex-direction: column;
+		flex-direction: row;
 		margin-top: 1em;
+		flex-wrap: wrap;
 		& .lap-wrapper {
+			background: #e2e2e2 0% 0% no-repeat padding-box;
+			box-shadow: 6px 4px 3px #00000029;
+			border: 1px solid #000000;
+			border-radius: 4px;
+			opacity: 1;
+			width: 230px;
+			height: 67px;
 			align-content: center;
-
+			justify-content: center;
+			cursor: pointer;
 			& p {
-				color: black;
-				text-align: left;
-				font-size: 20px;
-				font-family: $fontStyle;
-
-				margin: 0em;
+				text-align: center;
+				font: normal normal normal 30px/47px Roboto;
+				letter-spacing: 0.54px;
+				color: #000000;
+				opacity: 1;
+				width: 119px;
+				height: 39px;
 			}
 		}
 	}

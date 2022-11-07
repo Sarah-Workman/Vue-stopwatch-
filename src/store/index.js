@@ -17,7 +17,7 @@ import {
 } from "firebase/auth";
 
 import { db } from "@/firebase";
-
+import router from "@/router";
 export const getterTypes = Object.freeze({
 	SECOND_LENGTH: `secondLength`,
 });
@@ -46,12 +46,13 @@ export default createStore({
 		currentUser: "",
 		isRunning: false,
 		isPasswordVisable: false,
-		editing: false,
+		isEditing: false,
+		isSelectActive: false,
 		bulkDeleteOn: false,
 
 		toast: false,
 		fireBaseIds: [],
-		bulkDeleteIds: [],
+		selectedLaps: [],
 		lapId: "",
 		interval: undefined,
 	},
@@ -150,9 +151,10 @@ export default createStore({
 		toggleRunning(state) {
 			state.isRunning = !state.isRunning;
 		},
-		toggleEditLapTime(state) {
-			state.editing = !state.editing;
+		toggleIsEditing(state) {
+			state.isEditing = !state.isEditing;
 		},
+
 		toggleBulkDelete(state) {
 			state.bulkDeleteOn = !state.bulkDeleteOn;
 		},
@@ -192,6 +194,10 @@ export default createStore({
 		},
 		setDbId(state, dbId) {
 			state.fireBaseIds.push(dbId);
+		},
+		setSelectedIds(state, payload) {
+			debugger;
+			state.selectedLaps.push(payload);
 		},
 		setPlaceholderHour(state, placeholder) {
 			state.placeHolderHour = placeholder;
@@ -390,6 +396,7 @@ export default createStore({
 					const user = userCredential.user;
 					commit("setCurrentUser", user);
 					dispatch("getData", user);
+					router.push("/Homescreen");
 				})
 				.catch((error) => {
 					const errorCode = error.code;
@@ -411,14 +418,20 @@ export default createStore({
 				}
 			});
 		},
-		logOut({ commit }) {
+		logOut({ commit, state }) {
 			const auth = getAuth();
 			signOut(auth)
 				.then(() => {
 					//sign-out sucessful
 					commit("clearLaps");
 					commit("clear");
-					console.log("user signed out");
+
+					if (state.isPasswordVisable) {
+						commit("toggleIsPasswordVisable");
+					}
+					if (state.isEditing) {
+						commit("toggleIsEditing");
+					}
 				})
 				.catch((error) => {
 					//An error happened.

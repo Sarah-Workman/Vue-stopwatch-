@@ -49,7 +49,6 @@
 					email: this.email,
 					password: this.password,
 				});
-				this.$router.push("/Homescreen");
 			},
 			enroll() {
 				this.$router.push("/Enroll");
