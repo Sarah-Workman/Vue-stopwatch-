@@ -1,7 +1,7 @@
 <template>
 	<button
 		@click="$emit('start')"
-		id="StartBtn"
+		class="start-btn"
 		:class="{ stopBtnStyle: isRunning === true }"
 	>
 		{{ getBtnTxt }}
@@ -21,7 +21,7 @@
 	};
 </script>
 <style lang="scss" scoped>
-	#StartBtn {
+	.start-btn {
 		background: #20bf55 0% 0% no-repeat padding-box;
 		box-shadow: 6px 4px 3px #00000029;
 		border: 1px solid #707070;
@@ -34,6 +34,7 @@
 		font-family: Helvetica Neue;
 		width: 209px;
 		height: 61px;
+		cursor: pointer;
 	}
 
 	.stopBtnStyle {
@@ -50,5 +51,6 @@
 		font-family: Helvetica Neue;
 		width: 209px;
 		height: 61px;
+		cursor: pointer;
 	}
 </style>

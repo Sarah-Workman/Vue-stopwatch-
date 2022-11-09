@@ -7,6 +7,7 @@ import {
 	doc,
 	deleteDoc,
 	updateDoc,
+	serverTimestamp,
 } from "firebase/firestore";
 import {
 	getAuth,
@@ -48,12 +49,13 @@ export default createStore({
 		isPasswordVisable: false,
 		isEditing: false,
 		isUpdating: false,
+		isSelecting: false,
 		isSelectActive: false,
 		bulkDeleteOn: false,
 
 		toast: false,
 		fireBaseIds: [],
-		selectedLaps: [],
+		selected: [],
 		lapId: "",
 		interval: undefined,
 	},
@@ -169,6 +171,10 @@ export default createStore({
 		toggleIsUpdating(state) {
 			state.isUpdating = !state.isUpdating;
 		},
+		toggleIsSelecting(state) {
+			debugger;
+			state.isSelecting = !state.isSelecting;
+		},
 
 		setLapTime(state, payload) {
 			state.lapTime = {
@@ -199,10 +205,7 @@ export default createStore({
 		setDbId(state, dbId) {
 			state.fireBaseIds.push(dbId);
 		},
-		setSelectedIds(state, payload) {
-			debugger;
-			state.selectedLaps.push(payload);
-		},
+
 		setPlaceholderHour(state, placeholder) {
 			state.placeHolderHour = placeholder;
 		},
@@ -248,6 +251,9 @@ export default createStore({
 		setCurrentUser(state, payload) {
 			state.currentUser = payload;
 		},
+		setCurrentSelected(state, payload) {
+			state.selected.pop(payload);
+		},
 	},
 	actions: {
 		async addData({ state, commit }) {
@@ -258,10 +264,14 @@ export default createStore({
 				lapMinute: state.outputminutes,
 				lapSecond: state.outputseconds,
 			};
-			const response = await addDoc(collection(snapShot, "Laps"), lapTime);
+			const response = await addDoc(collection(snapShot, "Laps"), {
+				lapTime,
+				timestamp: serverTimestamp(),
+			});
 			commit("setLapTime", {
 				lapId: response.id,
 				time: `${lapTime.lapHour}:${lapTime.lapMinute}:${lapTime.lapSecond}`,
+				timestamp: serverTimestamp(),
 			});
 
 			commit("setDbId", response.id);
@@ -281,15 +291,16 @@ export default createStore({
 					// doc.data() is never undefined for query doc snapshots
 					console.log(doc.id, " => ", doc.data());
 
-					let lapHour = doc.data().lapHour;
+					let lapHour = doc.data().lapTime.lapHour;
 
-					let lapMinute = doc.data().lapMinute;
+					let lapMinute = doc.data().lapTime.lapMinute;
 
-					let lapSecond = doc.data().lapSecond;
+					let lapSecond = doc.data().lapTime.lapSecond;
 
 					commit("setLaps", {
 						id: doc.id,
 						time: `${lapHour}:${lapMinute}:${lapSecond}`,
+						timestamp: doc.timestamp,
 					});
 					commit("setDbId", doc.id);
 				});
@@ -302,7 +313,7 @@ export default createStore({
 
 			deleteDoc(doc(docRef, payload.lapId));
 		},
-
+		// needs work getPlaceholder
 		async getPlaceholder({ state, commit }) {
 			const querySnapshot = await getDocs(collection(db, "Laps"));
 			querySnapshot.forEach((doc) => {

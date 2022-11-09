@@ -4,9 +4,6 @@
 <script>
 	export default {
 		name: "LapBtn",
-		props: {
-			text: String,
-		},
 	};
 </script>
 <style lang="scss" scoped>
@@ -18,5 +15,6 @@
 		opacity: 1;
 		width: 155px;
 		height: 43px;
+		cursor: pointer;
 	}
 </style>

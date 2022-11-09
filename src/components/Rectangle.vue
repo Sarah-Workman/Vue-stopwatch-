@@ -5,17 +5,25 @@
 				{{ outputhours }}:{{ outputminutes }}:{{ outputseconds }}
 			</p>
 		</div>
-		<div id="buttonWrapper">
+		<div class="button-container">
 			<start-btn @start="startStopBtnClick" Id="startStopBtn" />
+			<div>
+				<LapBtn @lap="lapBtn" />
+				<EditBtn @edit="editSubmitBtnClick" />
+				<ResetBtn @reset="resetBtn" />
+			</div>
 		</div>
 	</div>
 </template>
 <script>
 	import { mapActions, mapGetters, mapMutations, mapState } from "vuex";
 	import StartBtn from "./StartBtn.vue";
+	import ResetBtn from "./ResetBtn.vue";
+	import LapBtn from "./LapBtn.vue";
+	import EditBtn from "./EditBtnComp.vue";
 	export default {
 		name: "Rectangle",
-		components: { StartBtn },
+		components: { StartBtn, LapBtn, ResetBtn, EditBtn },
 		methods: {
 			...mapActions([
 				"incrementSeconds",
@@ -68,6 +76,34 @@
 					}
 				}, 1000);
 			},
+			lapBtn() {
+				if (this.$store.state.isRunning === true) {
+					this.$store.dispatch("addData");
+				}
+			},
+			resetBtn() {
+				console.log("resetBtn connected");
+				if (this.$store.state.isRunning) {
+					this.$store.commit("toggleRunning");
+				}
+				this.$store.commit("clearTimeInterval");
+				this.$store.commit("clear");
+			},
+			editSubmitBtnClick() {
+				debugger;
+
+				if (!this.isEditing) {
+					this.editBtn();
+				} else {
+					this.submitBtn();
+				}
+			},
+			editBtn() {
+				this.$store.commit("toggleIsEditing");
+			},
+			submitBtn() {
+				this.$store.commit("toggleIsEditing");
+			},
 			stopBtn() {
 				debugger;
 				this.$store.commit("clearTimeInterval");
@@ -87,6 +123,7 @@
 				"outputseconds",
 				"outputminutes",
 				"outputhours",
+				"laps",
 			]),
 
 			...mapGetters(["checkSeconds", "checkMinutes", "checkHours"]),
@@ -127,18 +164,25 @@
 		margin: 0;
 		padding-top: 0.5em;
 	}
-	#buttonWrapper {
+	.button-container {
 		display: flex;
 		justify-content: center;
-		align-content: center;
+		align-items: center;
+		flex-direction: column;
 	}
-	#startStopBtn {
-		background: #20bf55 0% 0% no-repeat padding-box;
-		box-shadow: 6px 4px 3px #00000029;
-		border: 1px solid #707070;
-		border-radius: 4px;
+	#deleteAllLabel {
+		text-align: left;
+		font: normal normal normal 20px/24px Roboto;
+		letter-spacing: 0.19px;
+		color: #000000;
 		opacity: 1;
-		width: 209px;
-		height: 61px;
+		width: 93px;
+		height: 26px;
+	}
+	#deleteAll {
+		width: 35px;
+		height: 35px;
+		border: 1px solid #000000;
+		opacity: 1;
 	}
 </style>
