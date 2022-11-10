@@ -52,7 +52,7 @@ export default createStore({
 		isSelecting: false,
 		isSelectActive: false,
 		bulkDeleteOn: false,
-
+		currentSelected: false,
 		toast: false,
 		fireBaseIds: [],
 		selected: [],
@@ -107,6 +107,8 @@ export default createStore({
 		},
 		getUniqueLapId: (state) => (lapId) =>
 			state.fireBaseIds.find((id) => id === lapId),
+
+		getIsLapSelected: (state) => (lapId) => state.selected.includes(lapId),
 	},
 	mutations: {
 		countSeconds(state) {
@@ -241,9 +243,9 @@ export default createStore({
 		// 1
 		// );
 		// },
-		bulkDeleteIds(state, payload) {
-			state.bulkDeleteIds.push(payload);
-		},
+		// bulkDeleteIds(state, payload) {
+		// state.bulkDeleteIds.push(payload);
+		// },
 		toasterMsg(state, payload) {
 			state.toaster = payload;
 		},
@@ -251,8 +253,15 @@ export default createStore({
 		setCurrentUser(state, payload) {
 			state.currentUser = payload;
 		},
-		setCurrentSelected(state, payload) {
-			state.selected.pop(payload);
+		setSelected(state, payload) {
+			state.selected.push(payload);
+		},
+		removeSelected(state, payload) {
+			debugger;
+			state.selected.splice(
+				state.selected.findIndex((object) => object === payload),
+				1
+			);
 		},
 	},
 	actions: {
