@@ -7,7 +7,7 @@
 		</div>
 		<div class="button-container">
 			<start-btn @start="startStopBtnClick" Id="startStopBtn" />
-			<div>
+			<div class="stopwatchFunBtns">
 				<LapBtn @lap="lapBtn" />
 				<EditBtn @edit="editSubmitBtnClick" />
 				<ResetBtn @reset="resetBtn" />
@@ -140,7 +140,7 @@
 	.rectangle {
 		display: flex;
 		justify-content: center;
-		align-content: flex-end;
+		align-content: center;
 
 		width: fit-content;
 		padding: 1em;
@@ -169,6 +169,7 @@
 		justify-content: center;
 		align-items: center;
 		flex-direction: column;
+		row-gap: 0.5em;
 	}
 	#deleteAllLabel {
 		text-align: left;
@@ -184,5 +185,9 @@
 		height: 35px;
 		border: 1px solid #000000;
 		opacity: 1;
+	}
+	.stopwatchFunBtns {
+		display: flex;
+		column-gap: 1em;
 	}
 </style>
