@@ -188,7 +188,7 @@
 
 	.lap {
 		&-container {
-			justify-content: flex-start;
+			justify-content: center;
 			display: flex;
 			margin: auto;
 			align-content: flex-start;

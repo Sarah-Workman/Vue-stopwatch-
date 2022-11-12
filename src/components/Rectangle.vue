@@ -7,7 +7,7 @@
 		</div>
 		<div class="button-container">
 			<start-btn @start="startStopBtnClick" Id="startStopBtn" />
-			<div class="stopwatchFunBtns">
+			<div class="stopwatch-fun-btns">
 				<LapBtn @lap="lapBtn" />
 				<EditBtn @edit="editSubmitBtnClick" />
 				<ResetBtn @reset="resetBtn" />
@@ -186,8 +186,9 @@
 		border: 1px solid #000000;
 		opacity: 1;
 	}
-	.stopwatchFunBtns {
+	.stopwatch-fun-btns {
 		display: flex;
 		column-gap: 1em;
+		margin-bottom: 1em;
 	}
 </style>
