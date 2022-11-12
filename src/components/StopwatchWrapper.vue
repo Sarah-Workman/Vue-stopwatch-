@@ -1,11 +1,11 @@
 <template>
-	<div id="stopwatchContainer">
+	<div class="stopwatch-container">
 		<p id="logo">StopWatchApp</p>
-		<div id="stopwatchWrapper">
+
+		<div @click="signOut" class="signOut">Logoff</div>
+
+		<div class="stopwatch-wrapper">
 			<Rectangle class="Rectangle" />
-			<div class="side-bar">
-				<div @click="signOut" class="signOut">Logoff</div>
-			</div>
 		</div>
 
 		<div id="divider">
@@ -57,15 +57,6 @@
 	};
 </script>
 <style lang="scss" scoped>
-	.side-bar {
-		align-self: center;
-
-		justify-items: start;
-
-		grid-column-start: 1;
-		display: flex;
-		flex-direction: column;
-	}
 	#logo {
 		text-align: left;
 		font: normal normal bold 20px/25px Helvetica Neue;
@@ -76,17 +67,16 @@
 		height: 24px;
 	}
 
-	::v-deep#stopwatchWrapper {
+	.stopwatch-wrapper {
 		border-radius: 8px;
 
-		width: fit-content;
-		padding-bottom: 1em;
-		padding-right: 2em;
-		display: grid;
-		grid-template-columns: 1fr, 2fr;
-		grid-auto-flow: column;
+
+
+		display: flex;
+		align-items: center;
+		justify-content: center;
 	}
-	#stopwatchContainer {
+	.stopwatch-container {
 		border-radius: 8px;
 
 		width: fit-content;
