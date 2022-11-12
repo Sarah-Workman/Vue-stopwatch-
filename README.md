@@ -1,3 +1,3 @@
 # stopwatch
 
-![Alt Text](/gif.gif)
+![gif of project](/gif.gif)
