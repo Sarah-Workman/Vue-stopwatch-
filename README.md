@@ -1,37 +1,37 @@
 # **StopWatchApp**
 
-## Converted javascript stopwatch to a newer framework called Vue.
+### Converted javascript stopwatch to a newer framework called Vue.
 
-> ### Since I used Vue, the buttons and portions of the app are reuseable, and easy to plug and play with 3 lines of code.<br><h4>What this entails is placing the component into the parent compnents HTML, importing the component in, and registering the component in the script that could be exported itself.</h4>
+> #### Since I used Vue, the buttons and portions of the app are reuseable, and easy to plug and play with 3 lines of code.<br><h4>What this entails is placing the component into the parent compnents HTML, importing the component in, and registering the component in the script that could be exported itself.</h4>
 
 <!-- Time it took to learn vue, convert pure javscript to vue, learn vuex, learn firebase, and host project was 3 and half months. -->
 <br>
 
-### I added new features, state managment(vuex), and a backend powered by firebase.
+#### I added new features, state managment(vuex), and a backend powered by firebase.
 
 #
 
-## Users and their data is scalable.
+### Users and their data is scalable.
 
 All of the user specific data is ordered from oldest to newest using firestores timestamp feature.
 
-## The stopwatch displays all of CRUD.
+### The stopwatch displays all of CRUD.
 
 > **C** - You can add laps to your user's data.<br> **R** - It reads the data specific to user after sucessful authentication.<br> **U** - You can edit the individual lap while in edit mode.<br> **D** - You can individually quick delete by clicking on red x icon, or select many and select all. (bulk delete pending)<br>
 
 <!-- One of the pitfalls of my project is that firebase can only delete one item at a time. I had considered placing a loop in my code to pass to it one at a time, but this would slow down performance. So instead I got creative, and saw that firebase offered cloud functions. I thought if firebases servers could handle all of the work it would increase the speed of my app. The cloud functions are written in javascript. -->
 
-## Performance Stats(pending)
+### Performance Stats(pending)
 
 <!-- Total number of calls for each aspect --- cost per call 1k, 10k, 100k -->
 
-## The create, update, and delete show instantly on screen.
+#### The create, update, and delete show instantly on screen.
 
 #### I was able to accomplish this with array methods, state managment, and the reactivity of vue.
 
 Authentication is a simple email and password auth.
 
-## Style
+### Style
 
 I worked directly with a product designer on the style, but was able give my input every step of the way.<br>
 The design is dynamic using flexbox, and grid for my layout.
