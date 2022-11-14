@@ -102,6 +102,7 @@
 				this.$store.commit("toggleIsEditing");
 			},
 			submitBtn() {
+				this.$store.dispatch("bulkDelete");
 				this.$store.commit("toggleIsEditing");
 			},
 			stopBtn() {
@@ -124,6 +125,7 @@
 				"outputminutes",
 				"outputhours",
 				"laps",
+				"isEditing",
 			]),
 
 			...mapGetters(["checkSeconds", "checkMinutes", "checkHours"]),

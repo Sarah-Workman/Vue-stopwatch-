@@ -16,6 +16,7 @@ import {
 	createUserWithEmailAndPassword,
 	signOut,
 } from "firebase/auth";
+import { getFunctions, httpsCallable } from "firebase/functions";
 
 import { db } from "@/firebase";
 import router from "@/router";
@@ -376,26 +377,26 @@ export default createStore({
 				time: payload.time,
 			});
 		},
-		// async bulkDelete({ state, commit, dispatch }) {
-		// 	debugger;
-		// 	let i = 0;
-		// 	const lapRef = collection(db, "Laps");
+		async bulkDelete({ state }) {
+			debugger;
+			const deleteObjectData = {
+				selectedArray: state.selected,
+			};
+			const deleteObjectContext = {
+				uid: state.currentUser.uid,
+			};
 
-		// 	const q = query(lapRef, where("id", "==", state.bulkDeleteIds[0]));
-		// 	const snapShot = await getDocs(q);
-		// 	snapShot.forEach(async (doc) => {
-		// 		console.log(snapShot);
-		// 		await deleteDoc(lapRef, doc.id);
-		// 	});
-		// },
+			const functions = getFunctions();
+			const bulkDelete = httpsCallable(functions, "bulkDelete");
+			await bulkDelete({
+				data: deleteObjectData,
+				context: deleteObjectContext,
+			});
 
-		// if (state.bulkDeleteIds !== undefined) {
-		// commit("toggleDeletePath");
-		// } else {
-		// commit("toggleDeletePath");
-		// }
-		// dispatch("getDeletedData", { id: state.bulkDeleteIds.id });
-		// },
+			//TODO
+			//update lap
+			//msg for toaster
+		},
 
 		async enroll({ commit }, payload) {
 			const auth = getAuth();
