@@ -388,7 +388,7 @@ export default createStore({
 
 			const functions = getFunctions();
 			const bulkDelete = httpsCallable(functions, "bulkDelete");
-			await bulkDelete({
+			bulkDelete({
 				data: deleteObjectData,
 				context: deleteObjectContext,
 			});
