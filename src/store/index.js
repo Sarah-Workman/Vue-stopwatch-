@@ -377,24 +377,17 @@ export default createStore({
 				time: payload.time,
 			});
 		},
-		async bulkDelete({ state }) {
+		async bulkDelete({ state, dispatch }) {
 			debugger;
-			const deleteObjectData = {
-				selectedArray: state.selected,
-			};
-			const deleteObjectContext = {
-				uid: state.currentUser.uid,
-			};
 
 			const functions = getFunctions();
 			const bulkDelete = httpsCallable(functions, "bulkDelete");
 			bulkDelete({
-				data: deleteObjectData,
-				context: deleteObjectContext,
+				selectedArray: state.selected,
+				uid: state.currentUser.uid,
 			});
 
-			//TODO
-			//update lap
+			//dispatch("getDeletedData", {});
 			//msg for toaster
 		},
 

@@ -23,6 +23,6 @@ const db = getFirestore(app);
 const auth = getAuth(app);
 
 //Initialize functions
-const functions = getFunctions(app);
+//const functions = getFunctions(app);
 
 export { db };
