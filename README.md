@@ -17,7 +17,7 @@ All of the user specific data is ordered from oldest to newest using firestores 
 
 ### The stopwatch displays all of CRUD.
 
-> **C** - You can add laps to your user's data.<br> **R** - It reads the data specific to user after sucessful authentication.<br> **U** - You can edit the individual lap while in edit mode.<br> **D** - You can individually quick delete by clicking on red x icon, or select many and select all. (bulk delete pending)<br>
+> **C** - You can add laps to your user's data.<br> **R** - It reads the data specific to user after sucessful authentication.<br> **U** - You can edit the individual lap while in edit mode.<br> **D** - You can individually quick delete by clicking on red x icon, or select many and select all. <br>
 
 One of the pitfalls of my project is that firebase can only delete one item at a time. I had considered placing a loop in my code to pass to it one at a time, but this would slow down performance. So instead I got creative, and saw that firebase offered cloud functions. I thought if firebases servers could handle all of the work it would increase the speed of my app. The cloud functions are written in javascript. They are callable on submit event.
 
