@@ -19,7 +19,7 @@ All of the user specific data is ordered from oldest to newest using firestores 
 
 > **C** - You can add laps to your user's data.<br> **R** - It reads the data specific to user after sucessful authentication.<br> **U** - You can edit the individual lap while in edit mode.<br> **D** - You can individually quick delete by clicking on red x icon, or select many and select all. (bulk delete pending)<br>
 
-<!-- One of the pitfalls of my project is that firebase can only delete one item at a time. I had considered placing a loop in my code to pass to it one at a time, but this would slow down performance. So instead I got creative, and saw that firebase offered cloud functions. I thought if firebases servers could handle all of the work it would increase the speed of my app. The cloud functions are written in javascript. -->
+One of the pitfalls of my project is that firebase can only delete one item at a time. I had considered placing a loop in my code to pass to it one at a time, but this would slow down performance. So instead I got creative, and saw that firebase offered cloud functions. I thought if firebases servers could handle all of the work it would increase the speed of my app. The cloud functions are written in javascript. They are callable on submit event.
 
 ### Performance Stats(pending)
 
@@ -46,12 +46,6 @@ I ran into issues when trying to update my document because I needed the unique 
 
 Another issue I ran into was getting user specific data. I was able to get data by placing my dispatch inside of my login to get data specific to user ID by passing the UID to that action. I was able to set up a path that grabbed only that users laps. I ran into another issue with enrollment. How would I create collections specific to user? I was able to accomplish this by using setDoc which would allow you to specify the document ID, and I passed the uid to that document ID so that I could set and find that users data. The structure of my firestore is shown in the image below.**(image pending)**
 <br><br>
-
-#
-
-### This is a custom gif I created using photoshop that shows the login screen and homescreen with some of its functions.
-
-![gif of project](/gif.gif)
 
 ```
 
