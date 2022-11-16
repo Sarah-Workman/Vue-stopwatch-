@@ -16,6 +16,7 @@ import {
 	createUserWithEmailAndPassword,
 	signOut,
 } from "firebase/auth";
+import { getFunctions, httpsCallable } from "firebase/functions";
 
 import { db } from "@/firebase";
 import router from "@/router";
@@ -40,8 +41,9 @@ export default createStore({
 		placeHolderHour: "",
 		placeHolderMinute: "",
 		placeHolderSecond: "",
+		toastTimeout: "",
 		lapTime: "",
-		toaster: "",
+		toast: "",
 		editValue: {},
 
 		currentUser: "",
@@ -53,7 +55,7 @@ export default createStore({
 		isSelectActive: false,
 		bulkDeleteOn: false,
 		currentSelected: false,
-		toast: false,
+		isToasting: false,
 		fireBaseIds: [],
 		selected: [],
 		lapId: "",
@@ -168,15 +170,15 @@ export default createStore({
 		},
 
 		toggleToast(state) {
-			state.toast = !state.toast;
+			state.isToasting = !state.isToasting;
 		},
 		toggleIsUpdating(state) {
 			state.isUpdating = !state.isUpdating;
 		},
-		toggleIsSelecting(state) {
-			debugger;
-			state.isSelecting = !state.isSelecting;
-		},
+		// toggleIsSelecting(state) {
+		// debugger;
+		// state.isSelecting = !state.isSelecting;
+		// },
 
 		setLapTime(state, payload) {
 			state.lapTime = {
@@ -228,7 +230,6 @@ export default createStore({
 			lap.time = payload.time;
 		},
 		replaceLaps(state, payload) {
-			debugger;
 			state.laps.splice(
 				state.laps.findIndex(
 					(object) => object.id == payload.id && object.time == payload.time
@@ -236,18 +237,9 @@ export default createStore({
 				1
 			);
 		},
-		// deletePath(state, payload) {
-		// debugger;
-		// state.laps.splice(
-		// state.laps.findIndex((object) => object.id == payload.id),
-		// 1
-		// );
-		// },
-		// bulkDeleteIds(state, payload) {
-		// state.bulkDeleteIds.push(payload);
-		// },
-		toasterMsg(state, payload) {
-			state.toaster = payload;
+
+		setToastMsg(state, payload) {
+			state.toast = payload;
 		},
 
 		setCurrentUser(state, payload) {
@@ -257,7 +249,6 @@ export default createStore({
 			state.selected.push(payload);
 		},
 		removeSelected(state, payload) {
-			debugger;
 			state.selected.splice(
 				state.selected.findIndex((object) => object === payload),
 				1
@@ -265,6 +256,12 @@ export default createStore({
 		},
 	},
 	actions: {
+		async toastTimeout({ commit }, time) {
+			debugger;
+			setTimeout(() => {
+				commit("toggleToast");
+			}, await time);
+		},
 		async addData({ state, commit }) {
 			debugger;
 			const snapShot = doc(db, "Users", state.currentUser.uid);
@@ -370,32 +367,22 @@ export default createStore({
 			});
 		},
 
-		async getDeletedData({ commit, state }, payload) {
+		async bulkDelete({ state, dispatch }) {
+			debugger;
+
+			const functions = getFunctions();
+			const bulkDelete = httpsCallable(functions, "bulkDelete");
+			bulkDelete({
+				selectedArray: state.selected,
+				uid: state.currentUser.uid,
+			});
+
 			commit("replaceLaps", {
 				id: payload.lapId,
 				time: payload.time,
 			});
+			//msg for toaster
 		},
-		// async bulkDelete({ state, commit, dispatch }) {
-		// 	debugger;
-		// 	let i = 0;
-		// 	const lapRef = collection(db, "Laps");
-
-		// 	const q = query(lapRef, where("id", "==", state.bulkDeleteIds[0]));
-		// 	const snapShot = await getDocs(q);
-		// 	snapShot.forEach(async (doc) => {
-		// 		console.log(snapShot);
-		// 		await deleteDoc(lapRef, doc.id);
-		// 	});
-		// },
-
-		// if (state.bulkDeleteIds !== undefined) {
-		// commit("toggleDeletePath");
-		// } else {
-		// commit("toggleDeletePath");
-		// }
-		// dispatch("getDeletedData", { id: state.bulkDeleteIds.id });
-		// },
 
 		async enroll({ commit }, payload) {
 			const auth = getAuth();

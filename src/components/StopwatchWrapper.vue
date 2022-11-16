@@ -11,8 +11,7 @@
 		<div id="divider">
 			<LapContainer />
 		</div>
-
-		<div id="snackBar" text="toaster" v-show="toast === true">{{ text }}</div>
+		<Toast />
 	</div>
 </template>
 
@@ -22,12 +21,14 @@
 	import { mapState } from "vuex";
 
 	import LapContainer from "./LapContainer.vue";
+	import Toast from "./ToastComp.vue";
 
 	export default {
 		name: "StopWatchWrapper",
 		components: {
 			Rectangle,
 			LapContainer,
+			Toast,
 		},
 		data() {
 			return {
@@ -35,19 +36,10 @@
 			};
 		},
 
+		activated() {
+			console.log("isActivated");
+		},
 		methods: {
-			// bulkDeleteBtn() {
-			// debugger;
-
-			// this.$store.commit("toggleBulkDelete");
-
-			// if (this.$store.state.bulkDeleteOn === false) {
-			// this.$store.dispatch("bulkDelete");
-
-			// this.$store.commit("clearCheckedIds");
-			// }
-			// },
-
 			signOut() {
 				this.$store.dispatch("logOut");
 				//listener is currently not working, but I would want the isAuthed to equal false before pushing to the login screen
@@ -69,8 +61,6 @@
 
 	.stopwatch-wrapper {
 		border-radius: 8px;
-
-
 
 		display: flex;
 		align-items: center;
@@ -98,18 +88,5 @@
 		font-weight: bolder;
 		cursor: pointer;
 		align-self: flex-end;
-	}
-
-	#toaster {
-		min-width: 250px;
-		display: flex;
-		align-content: center;
-		color: #fff;
-		background: gray;
-		text-align: center;
-		border-radius: 2px;
-		z-index: 1;
-		font-size: 17px;
-		position: fixed;
 	}
 </style>

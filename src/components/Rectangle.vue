@@ -7,7 +7,7 @@
 		</div>
 		<div class="button-container">
 			<start-btn @start="startStopBtnClick" Id="startStopBtn" />
-			<div class="stopwatchFunBtns">
+			<div class="stopwatch-fun-btns">
 				<LapBtn @lap="lapBtn" />
 				<EditBtn @edit="editSubmitBtnClick" />
 				<ResetBtn @reset="resetBtn" />
@@ -31,6 +31,7 @@
 				"startStopwatch",
 				"bulkDelete",
 				"signOut",
+				"toastTimeout",
 			]),
 			...mapMutations([
 				"countSeconds",
@@ -46,6 +47,7 @@
 				"toggleBulkDelete",
 				"toggleRunning",
 				"clearTimeInterval",
+				"setToastMsg",
 			]),
 			startStopBtnClick() {
 				debugger;
@@ -58,7 +60,6 @@
 				this.toggleRunning();
 			},
 			startBtn() {
-				debugger;
 				this.$store.state.interval = setInterval(() => {
 					this.countSeconds();
 					const outputseconds = this.$store.getters.checkSeconds;
@@ -80,6 +81,10 @@
 				if (this.$store.state.isRunning === true) {
 					this.$store.dispatch("addData");
 				}
+				debugger;
+				this.$store.commit("setToastMsg", "Lap added");
+				this.$store.commit("toggleToast");
+				this.$store.dispatch("toastTimeout", 5000);
 			},
 			resetBtn() {
 				console.log("resetBtn connected");
@@ -88,6 +93,9 @@
 				}
 				this.$store.commit("clearTimeInterval");
 				this.$store.commit("clear");
+				this.$store.commit("setToastMsg", "You reset stopwatch time");
+				this.$store.commit("toggleToast");
+				this.$store.dispatch("toastTimeout", 5000);
 			},
 			editSubmitBtnClick() {
 				debugger;
@@ -102,10 +110,10 @@
 				this.$store.commit("toggleIsEditing");
 			},
 			submitBtn() {
+				this.$store.dispatch("bulkDelete");
 				this.$store.commit("toggleIsEditing");
 			},
 			stopBtn() {
-				debugger;
 				this.$store.commit("clearTimeInterval");
 			},
 		},
@@ -124,6 +132,8 @@
 				"outputminutes",
 				"outputhours",
 				"laps",
+				"isEditing",
+				"toastTimeout",
 			]),
 
 			...mapGetters(["checkSeconds", "checkMinutes", "checkHours"]),
@@ -186,8 +196,9 @@
 		border: 1px solid #000000;
 		opacity: 1;
 	}
-	.stopwatchFunBtns {
+	.stopwatch-fun-btns {
 		display: flex;
 		column-gap: 1em;
+		margin-bottom: 1em;
 	}
 </style>

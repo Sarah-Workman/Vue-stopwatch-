@@ -67,10 +67,16 @@
 				inputHours: "",
 				inputMinutes: "",
 				inputSeconds: "",
+				// inputs: [{}],
 			};
 		},
 		methods: {
-			...mapMutations(["setId", "setInputValues", "setSelectedIds"]),
+			...mapMutations([
+				"setId",
+				"setInputValues",
+				"setSelectedIds",
+				"setToastMsg",
+			]),
 			...mapActions([
 				"getPlaceholder",
 				"updateLap",
@@ -78,9 +84,11 @@
 				"deleteOne",
 				"getDeletedData",
 				"bulkDelete",
+				"toastTimeout",
 			]),
 
 			editOne(lapId) {
+				debugger;
 				this.$store.state.editing = false;
 
 				let lapToEdit = this.getLapById(lapId);
@@ -90,7 +98,7 @@
 				this.$store.dispatch("getPlaceholder");
 			},
 			update(id) {
-				//to do dual event
+				debugger;
 				this.$store.commit("setInputValues", {
 					lapHour: this.inputHours,
 					lapMinute: this.inputMinutes,
@@ -105,23 +113,25 @@
 
 				this.$store.state.editing = true;
 				this.$store.commit("toggleIsUpdating");
+				this.$store.commit("setToastMsg", "Lap Updated");
+				this.$store.commit("toggleToast");
+				this.$store.dispatch("toastTimeout", 5000);
 			},
 			deleteOne(id, time) {
 				console.log(id);
 				this.$store.dispatch("deleteOne", { lapId: id });
 				this.$store.state.editing = true;
 
-				this.$store.dispatch("getDeletedData", { lapId: id, time: time });
+				this.$store.commit("replaceLaps", { lapId: id, time: time });
+				this.$store.commit("setToastMsg", "Lap Deleted");
+				this.$store.commit("toggleToast");
+				this.$store.dispatch("toastTimeout", 5000);
 			},
-
+			//consider changing the name
 			add(uid) {
 				this.$store.commit("currentUser", uid);
 			},
-			// bulkDelete(id) {
-			// debugger;
-			// console.log(`${id} was selected`);
-			// this.$store.commit("setSelectedIds", id);
-			// },
+
 			selectLap(id) {
 				debugger;
 
@@ -188,7 +198,7 @@
 
 	.lap {
 		&-container {
-			justify-content: flex-start;
+			justify-content: center;
 			display: flex;
 			margin: auto;
 			align-content: flex-start;
