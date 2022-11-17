@@ -1,7 +1,16 @@
 <template>
 	<div v-show="isEditing" class="delete-all-container">
-		<label for="deleteAll" id="deleteAllLabel">Delete All?</label>
-		<input type="checkbox" @click="deleteAll" name="deleteAll" id="deleteAll" />
+		<label
+			for="selectAllUnselectAll4DeletionCheckboxClick"
+			id="selectAllUnselectAll4DeletionCheckboxClickLabel"
+			>Delete All?</label
+		>
+		<input
+			type="checkbox"
+			@click="selectAllUnselectAll4DeletionCheckboxClick"
+			name="selectAllUnselectAll4DeletionCheckboxClick"
+			id="selectAllUnselectAll4DeletionCheckboxClick"
+		/>
 	</div>
 	<div class="lap-container">
 		<div
@@ -12,7 +21,7 @@
 				'lap-editing': isEditing,
 				'lap-selected': getIsLapSelected(lap.id) && isEditing,
 			}"
-			@click="selectLap(lap.id)"
+			@click="selectLap(lap.id, lap.time)"
 		>
 			<!-- @click="isEditing ? bulkDelete(lap.id) : null" -->
 			<div
@@ -131,34 +140,47 @@
 			add(uid) {
 				this.$store.commit("currentUser", uid);
 			},
-
-			selectLap(id) {
+			//will use this info in RectangleComp.vue for bulkDelete
+			//this is a multiple delete option
+			selectLap(lapId, lapTime) {
 				debugger;
 
-				if (this.getIsLapSelected(id)) {
-					this.$store.commit("removeSelected", id);
+				if (this.getIsLapSelected(lapId, lapTime)) {
+					this.$store.commit("removeSelected", { id: lapId, time: lapTime });
 				} else {
-					this.$store.commit("setSelected", id);
+					this.$store.commit("setSelected", { id: lapId, time: lapTime });
 				}
 			},
-			deleteAll() {
+
+			selectAllUnselectAll4DeletionCheckboxClick() {
 				debugger;
 				if (!this.isSelecting) {
-					this.$store.commit("toggleIsSelecting");
-					for (let index = 0; index < this.$store.state.laps.length; index++) {
-						this.$store.commit("setSelected", this.$store.state.laps[index].id);
-					}
+					selectAllForDeletion();
 				} else {
-					this.$store.commit("toggleIsSelecting");
-					for (let index = 0; index < this.$store.state.laps.length; index++) {
-						this.$store.commit(
-							"removeSelected",
-							this.$store.state.laps[index].id
-						);
-					}
+					unselectAllForDeletion();
 				}
-				console.log("selected: " + this.$store.state.selected);
 			},
+		},
+
+		selectAllForDeletion() {
+			debugger;
+			this.$store.commit("toggleIsSelecting");
+			for (let index = 0; index < this.$store.state.laps.length; index++) {
+				this.$store.commit("setSelected", {
+					id: this.$store.state.laps[index].id,
+					time: this.$store.state.laps[index].time,
+				});
+			}
+		},
+		unselectAllForDeletion() {
+			debugger;
+			this.$store.commit("toggleIsSelecting");
+			for (let index = 0; index < this.$store.state.laps.length; index++) {
+				this.$store.commit("removeSelected", {
+					id: this.$store.state.laps[index].id,
+					time: this.$store.state.laps[index].time,
+				});
+			}
 		},
 
 		computed: {
@@ -187,7 +209,7 @@
 			}),
 		},
 
-		emits: ["store-checked-ids"],
+		//emits: ["store-checked-ids"],
 	};
 </script>
 

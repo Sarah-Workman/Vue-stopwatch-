@@ -20,6 +20,7 @@ import { getFunctions, httpsCallable } from "firebase/functions";
 
 import { db } from "@/firebase";
 import router from "@/router";
+
 export const getterTypes = Object.freeze({
 	SECOND_LENGTH: `secondLength`,
 });
@@ -57,7 +58,8 @@ export default createStore({
 		currentSelected: false,
 		isToasting: false,
 		fireBaseIds: [],
-		selected: [],
+		selectedObj: [],
+		selectedIds: [],
 		lapId: "",
 		interval: undefined,
 	},
@@ -110,7 +112,7 @@ export default createStore({
 		getUniqueLapId: (state) => (lapId) =>
 			state.fireBaseIds.find((id) => id === lapId),
 
-		getIsLapSelected: (state) => (lapId) => state.selected.includes(lapId),
+		getIsLapSelected: (state) => (lapId) => state.selectedIds.includes(lapId),
 	},
 	mutations: {
 		countSeconds(state) {
@@ -154,6 +156,10 @@ export default createStore({
 			state.minutes = 0;
 			state.hours = 0;
 		},
+		clearSelected(state) {
+			state.selectedObj = [];
+			state.selectedIds = [];
+		},
 
 		toggleRunning(state) {
 			state.isRunning = !state.isRunning;
@@ -175,10 +181,9 @@ export default createStore({
 		toggleIsUpdating(state) {
 			state.isUpdating = !state.isUpdating;
 		},
-		// toggleIsSelecting(state) {
-		// debugger;
-		// state.isSelecting = !state.isSelecting;
-		// },
+		toggleIsSelecting(state) {
+			state.isSelecting = !state.isSelecting;
+		},
 
 		setLapTime(state, payload) {
 			state.lapTime = {
@@ -230,6 +235,7 @@ export default createStore({
 			lap.time = payload.time;
 		},
 		replaceLaps(state, payload) {
+			debugger;
 			state.laps.splice(
 				state.laps.findIndex(
 					(object) => object.id == payload.id && object.time == payload.time
@@ -246,11 +252,13 @@ export default createStore({
 			state.currentUser = payload;
 		},
 		setSelected(state, payload) {
-			state.selected.push(payload);
+			debugger;
+			state.selectedObj.push(payload);
+			state.selectedIds.push(payload.id);
 		},
 		removeSelected(state, payload) {
-			state.selected.splice(
-				state.selected.findIndex((object) => object === payload),
+			state.selectedObj.splice(
+				state.selectedObj.findIndex((object) => object.id === payload.lapId),
 				1
 			);
 		},
@@ -367,20 +375,22 @@ export default createStore({
 			});
 		},
 
-		async bulkDelete({ state, dispatch }) {
+		async bulkDelete({ state, commit }) {
 			debugger;
 
 			const functions = getFunctions();
 			const bulkDelete = httpsCallable(functions, "bulkDelete");
 			bulkDelete({
-				selectedArray: state.selected,
+				selectedArray: state.selectedIds,
 				uid: state.currentUser.uid,
 			});
 
-			commit("replaceLaps", {
-				id: payload.lapId,
-				time: payload.time,
-			});
+			for (let index = 0; index < state.selectedObj.length; index++) {
+				commit("replaceLaps", {
+					id: state.selectedObj[index].id,
+					time: state.selectedObj[index].time,
+				});
+			}
 			//msg for toaster
 		},
 
@@ -436,6 +446,7 @@ export default createStore({
 					//sign-out sucessful
 					commit("clearLaps");
 					commit("clear");
+					commit("clearSelected");
 
 					if (state.isPasswordVisable) {
 						commit("toggleIsPasswordVisable");

@@ -112,6 +112,7 @@
 			submitBtn() {
 				this.$store.dispatch("bulkDelete");
 				this.$store.commit("toggleIsEditing");
+				this.$store.commit("clearSelected");
 			},
 			stopBtn() {
 				this.$store.commit("clearTimeInterval");
