@@ -1,8 +1,9 @@
 <template>
 	<div class="stopwatch-container">
-		<p id="logo">StopWatchApp</p>
-
-		<div @click="signOut" class="signOut">Logoff</div>
+		<div class="stopwatch-logo-container">
+			<p id="logo">StopWatchApp</p>
+			<div @click="signOut" class="signOut">Logoff</div>
+		</div>
 
 		<div class="stopwatch-wrapper">
 			<Rectangle class="Rectangle" />
@@ -55,8 +56,6 @@
 		letter-spacing: 0px;
 		color: #000000;
 		opacity: 1;
-		width: 143px;
-		height: 24px;
 	}
 
 	.stopwatch-wrapper {
@@ -66,6 +65,7 @@
 		align-items: center;
 		justify-content: center;
 	}
+
 	.stopwatch-container {
 		border-radius: 8px;
 
@@ -83,10 +83,17 @@
 		width: 1129px;
 		height: 433px;
 	}
-	.signOut {
-		color: blue;
-		font-weight: bolder;
-		cursor: pointer;
-		align-self: flex-end;
+
+	.stopwatch-logo-container {
+		display: flex;
+		flex-direction: row;
+		justify-content: space-between;
+		& .signOut {
+			color: blue;
+			font-weight: bolder;
+			cursor: pointer;
+			justify-content: center;
+			margin-top: 1.5em;
+		}
 	}
 </style>

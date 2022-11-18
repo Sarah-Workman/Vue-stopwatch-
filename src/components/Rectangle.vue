@@ -154,7 +154,6 @@
 		align-content: center;
 
 		width: fit-content;
-		padding: 1em;
 	}
 	#textWrapper {
 		color: #000000;

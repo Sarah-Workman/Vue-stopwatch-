@@ -1,0 +1,21 @@
+<svg width="199" height="204" viewBox="0 0 199 204" fill="none" xmlns="http://www.w3.org/2000/svg">
+<path d="M132.5 17.5C132.5 21.4035 129.05 25.4033 122.382 28.5151C115.836 31.5701 106.687 33.5 96.5 33.5C86.3133 33.5 77.1642 31.5701 70.6178 28.5151C63.9497 25.4033 60.5 21.4035 60.5 17.5C60.5 13.5965 63.9497 9.5967 70.6178 6.48491C77.1642 3.42995 86.3133 1.5 96.5 1.5C106.687 1.5 115.836 3.42995 122.382 6.48491C129.05 9.5967 132.5 13.5965 132.5 17.5Z" fill="#D9D9D9" fill-opacity="0.03" stroke="black" stroke-width="3"/>
+<rect x="95" y="75" width="8" height="72" rx="4" fill="black"/>
+<path fill-rule="evenodd" clip-rule="evenodd" d="M99.5 188.817C147.908 188.817 183.206 156.503 183.206 121C183.206 85.4966 147.908 53.1829 99.5 53.1829C51.092 53.1829 15.7937 85.4966 15.7937 121C15.7937 156.503 51.092 188.817 99.5 188.817ZM99.5 204C154.452 204 199 166.84 199 121C199 75.1604 154.452 38 99.5 38C44.5477 38 0 75.1604 0 121C0 166.84 44.5477 204 99.5 204Z" fill="black"/>
+<circle cx="100" cy="121" r="11" fill="black"/>
+<line x1="99.9986" y1="53.0909" x2="99.5443" y2="68.084" stroke="black" stroke-width="6"/>
+<line x1="183" y1="124" x2="168" y2="124" stroke="black" stroke-width="6"/>
+<line x1="28" y1="124" x2="13" y2="124" stroke="black" stroke-width="6"/>
+<path d="M97.4543 175L97 189.993" stroke="black" stroke-width="6"/>
+<line x1="68.2951" y1="70.9379" x2="62.2541" y2="57.2082" stroke="black" stroke-width="6"/>
+<line x1="171.2" y1="158.4" x2="159.2" y2="149.4" stroke="black" stroke-width="6"/>
+<line x1="39.2026" y1="92.4164" x2="26.4277" y2="84.555" stroke="black" stroke-width="6"/>
+<line x1="136.398" y1="182.915" x2="130.672" y2="170.14" stroke="black" stroke-width="6"/>
+<line x1="41.445" y1="153.305" x2="29.9202" y2="162.906" stroke="black" stroke-width="6"/>
+<line x1="62.0944" y1="169.499" x2="54.5986" y2="182.492" stroke="black" stroke-width="6"/>
+<path d="M136.921 59L130.708 72.9055" stroke="black" stroke-width="6"/>
+<line x1="175.595" y1="88.6304" x2="162.443" y2="95.8429" stroke="black" stroke-width="6"/>
+<line x1="103.548" y1="124.604" x2="131.548" y2="135.604" stroke="black" stroke-width="3"/>
+<rect x="91" y="28" width="11" height="10" fill="black"/>
+<rect x="79" y="17" width="35" height="11" fill="black"/>
+</svg>
