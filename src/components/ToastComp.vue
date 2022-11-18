@@ -49,7 +49,6 @@
 			border-radius: 2px;
 			z-index: 1;
 			font-size: 30px;
-			position: absolute;
 		}
 	}
 </style>

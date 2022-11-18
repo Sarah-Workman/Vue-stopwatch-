@@ -17,11 +17,6 @@ const routes = [
 		name: "stopwatch",
 		component: () => import("../views/HomeView.vue"),
 	},
-	{
-		path: "/Loading",
-		name: "Loading",
-		component: () => import("../views/Loading.vue"),
-	},
 ];
 
 const router = createRouter({
