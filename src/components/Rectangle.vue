@@ -110,9 +110,12 @@
 				this.$store.commit("toggleIsEditing");
 			},
 			submitBtn() {
-				this.$store.dispatch("bulkDelete");
+				if (this.$store.state.selectedIds.length > 0) {
+					this.$store.dispatch("bulkDelete");
+					this.$store.commit("clearSelected");
+				} else {
+				}
 				this.$store.commit("toggleIsEditing");
-				this.$store.commit("clearSelected");
 			},
 			stopBtn() {
 				this.$store.commit("clearTimeInterval");

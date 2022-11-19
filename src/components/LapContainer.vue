@@ -19,34 +19,32 @@
 			class="lap-wrapper"
 			:class="{
 				'lap-editing': isEditing,
-				'lap-selected': getIsLapSelected(lap.id) && isEditing,
+				'lap-selected': getIsLapSelected(lap.id) && isEditing && !editing,
 			}"
-			@click="selectLap(lap.id, lap.time)"
+			@click="!editing ? selectLap(lap.id, lap.time) : null"
 		>
 			<!-- @click="isEditing ? bulkDelete(lap.id) : null" -->
-			<div
-				v-if="lap.id === lapId && editing === false"
-				class="lap-input-wrapper"
-			>
+			<div v-if="lap.id === lapId && editing" class="lap-input-wrapper">
 				<input
 					required=""
 					:placeholder="placeHolderHour"
-					@keyup.enter="update(lap.id)"
+					@keyup.enter="checkThenUpdateEnter(lap.id)"
 					v-model="inputHours"
 				/>:
 				<input
 					required=""
 					:placeholder="placeHolderMinute"
-					@keyup.enter="update(lap.id)"
+					@keyup.enter="checkThenUpdateEnter(lap.id)"
 					v-model="inputMinutes"
 				/>:
 				<input
 					required=""
 					:placeholder="placeHolderSecond"
-					@keyup.enter="update(lap.id)"
+					@keyup.enter="checkThenUpdateEnter(lap.id)"
 					v-model="inputSeconds"
 				/>
 			</div>
+
 			<p v-else>
 				{{ lap.time }}
 			</p>
@@ -61,6 +59,11 @@
 				class="fa-solid fa-pen"
 				v-if="isEditing"
 			></i>
+		</div>
+		<div class="lap-input-form-errors-container">
+			<p v-show="formErrors.length > 0" class="lap-input-form-errors">
+				{{ formErrors }}
+			</p>
 		</div>
 	</div>
 </template>
@@ -98,7 +101,7 @@
 
 			editOne(lapId) {
 				debugger;
-				this.$store.state.editing = false;
+				this.$store.state.editing = true;
 
 				let lapToEdit = this.getLapById(lapId);
 
@@ -106,6 +109,35 @@
 				this.$store.commit("toggleIsUpdating");
 				this.$store.dispatch("getPlaceholder");
 			},
+			checkThenUpdateEnter(id) {
+				if (this.$store.state.checked) {
+					update(id);
+				} else {
+					check(id);
+				}
+			},
+			check(id) {
+				if (
+					this.inputHours.length !== 2 &&
+					this.inputMinutes.length !== 2 &&
+					this.inputSeconds.length !== 2
+				) {
+					this.$store.commit(
+						"setErrors",
+						"Hours, Minutes, and Seconds must have two digits"
+					);
+				} else if (
+					this.inputHours === undefined ||
+					this.inputMinutes === undefined ||
+					this.inputSeconds == undefined
+				) {
+					this.$store.commit("setErrors", "A value in all boxes is requred");
+				} else {
+					this.$store.commit("toggleChecked");
+					update(id);
+				}
+			},
+
 			update(id) {
 				debugger;
 				this.$store.commit("setInputValues", {
@@ -114,13 +146,13 @@
 					lapSecond: this.inputSeconds,
 				});
 
-				this.$store.getters.nullInputs;
+				// this.$store.getters.nullInputs;
 
 				this.$store.dispatch("updateLap", {
 					lapId: id,
 				});
-
-				this.$store.state.editing = true;
+				this.state.commit("toggleChecked");
+				this.$store.state.editing = false;
 				this.$store.commit("toggleIsUpdating");
 				this.$store.commit("setToastMsg", "Lap Updated");
 				this.$store.commit("toggleToast");
@@ -145,7 +177,7 @@
 			selectLap(lapId, lapTime) {
 				debugger;
 
-				if (this.getIsLapSelected(lapId, lapTime)) {
+				if (this.getIsLapSelected(lapId)) {
 					this.$store.commit("removeSelected", { id: lapId, time: lapTime });
 				} else {
 					this.$store.commit("setSelected", { id: lapId, time: lapTime });
@@ -201,6 +233,8 @@
 				"isSelecting",
 				"selected",
 				"currentSelected",
+				"formErrors",
+				"checked",
 			]),
 			...mapGetters({
 				getLapById: "getUniqueLapId",
@@ -231,6 +265,13 @@
 			font: normal normal normal 30px/47px Roboto;
 			letter-spacing: 0.54px;
 			color: #000;
+		}
+		&-input-form-errors-container {
+			display: flex;
+			flex-direction: column;
+		}
+		&-input-form-errors {
+			color: red;
 		}
 
 		&-wrapper {

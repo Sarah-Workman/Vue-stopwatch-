@@ -51,15 +51,18 @@ export default createStore({
 		isRunning: false,
 		isPasswordVisable: false,
 		isEditing: false,
+		editing: false,
 		isUpdating: false,
 		isSelecting: false,
 		isSelectActive: false,
 		bulkDeleteOn: false,
 		currentSelected: false,
 		isToasting: false,
+		checked: false,
 		fireBaseIds: [],
 		selectedObj: [],
 		selectedIds: [],
+		formErrors: [],
 		lapId: "",
 		interval: undefined,
 	},
@@ -87,28 +90,28 @@ export default createStore({
 			const outputHours = state.hours < 10 ? "0" + state.hours : state.hours;
 			return outputHours;
 		},
-		nullInputs(state) {
-			//need to replace with validation
-			state.lapSecond === ""
-				? (state.lapSecond = state.lapSecond)
-				: (state.lapSecond = state.lapSecond);
-			state.lapMinute === ""
-				? (state.lapMinute = state.lapMinute)
-				: (state.lapMinute = state.lapMinute);
-			state.lapHour === ""
-				? (state.lapHour = state.lapHour)
-				: (state.lapHour = state.lapHour);
+		// nullInputs(state) {
+		//need to replace with validation
+		// state.lapSecond === ""
+		// ? (state.lapSecond = state.lapSecond)
+		// : (state.lapSecond = state.lapSecond);
+		// state.lapMinute === ""
+		// ? (state.lapMinute = state.lapMinute)
+		// : (state.lapMinute = state.lapMinute);
+		// state.lapHour === ""
+		// ? (state.lapHour = state.lapHour)
+		// : (state.lapHour = state.lapHour);
 
-			state.lapHour.length < 2
-				? (state.lapHour = `0${state.lapHour}`)
-				: (state.lapHour = state.lapHour);
-			state.lapMinute.length < 2
-				? (state.lapMinute = `0${state.lapMinute}`)
-				: (state.lapMinute = state.lapMinute);
-			state.lapSecond.length < 2
-				? (state.lapSecond = `0${state.lapSecond}`)
-				: (state.lapSecond = state.lapSecond);
-		},
+		// state.lapHour.length < 2
+		// ? (state.lapHour = `0${state.lapHour}`)
+		// : (state.lapHour = state.lapHour);
+		// state.lapMinute.length < 2
+		// ? (state.lapMinute = `0${state.lapMinute}`)
+		// : (state.lapMinute = state.lapMinute);
+		// state.lapSecond.length < 2
+		// ? (state.lapSecond = `0${state.lapSecond}`)
+		// : (state.lapSecond = state.lapSecond);
+		// },
 		getUniqueLapId: (state) => (lapId) =>
 			state.fireBaseIds.find((id) => id === lapId),
 
@@ -184,6 +187,9 @@ export default createStore({
 		toggleIsSelecting(state) {
 			state.isSelecting = !state.isSelecting;
 		},
+		toggleChecked(state) {
+			state.checked = !state.checked;
+		},
 
 		setLapTime(state, payload) {
 			state.lapTime = {
@@ -204,6 +210,9 @@ export default createStore({
 		},
 		clearLaps(state) {
 			state.laps = [];
+		},
+		setErrors(state, payload) {
+			state.formErrors.push(payload);
 		},
 		setLaps(state, lapTimeString) {
 			state.laps.push(lapTimeString);
@@ -257,8 +266,15 @@ export default createStore({
 			state.selectedIds.push(payload.id);
 		},
 		removeSelected(state, payload) {
+			debugger;
+			state.selectedIds.splice(
+				state.selectedIds.findIndex((object) => object.id === payload.id),
+				1
+			);
 			state.selectedObj.splice(
-				state.selectedObj.findIndex((object) => object.id === payload.lapId),
+				state.selectedObj.findIndex(
+					(object) => object.id === payload.id && object.time === payload.time
+				),
 				1
 			);
 		},
@@ -279,7 +295,9 @@ export default createStore({
 				lapSecond: state.outputseconds,
 			};
 			const response = await addDoc(collection(snapShot, "Laps"), {
-				lapTime,
+				lapHour: lapTime.lapHour,
+				lapMinute: lapTime.Minute,
+				lapSecond: lapTime.lapSecond,
 				timestamp: serverTimestamp(),
 			});
 			commit("setLapTime", {
@@ -349,6 +367,7 @@ export default createStore({
 		},
 
 		async updateLap({ state, commit }, payload) {
+			debugger;
 			const querySnapshot = doc(
 				db,
 				"Users",
@@ -357,19 +376,17 @@ export default createStore({
 				payload.lapId
 			);
 
-			let updateTime = {
+			let lapTime = {
 				lapHour: state.lapHour,
 				lapMinute: state.lapMinute,
 				lapSecond: state.lapSecond,
 			};
 
 			await updateDoc(querySnapshot, {
-				lapHour: updateTime.lapHour,
-				lapMinute: updateTime.lapMinute,
-				lapMinute: updateTime.lapHour,
+				lapTime,
 			});
 			commit("updateLaps", {
-				time: `${updateTime.lapHour}:${updateTime.lapMinute}:${updateTime.lapSecond}`,
+				time: `${lapTime.lapHour}:${lapTime.lapMinute}:${lapTime.lapSecond}`,
 
 				id: payload.lapId,
 			});
