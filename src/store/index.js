@@ -417,6 +417,7 @@ export default createStore({
 					const user = userCredential.user;
 					commit("setCurrentUser", user);
 					dispatch("getData", user);
+
 					router.push("/Homescreen");
 				})
 				.catch((error) => {

@@ -1,11 +1,10 @@
 <template>
 	<Suspense>
-		<template #defualt>
+		<template #default>
 			<StopWatchWrapper />
 		</template>
-		<template #fallback>
-			<LoadingComp />
-		</template>
+
+		<template #fallback> Loading...</template>
 	</Suspense>
 </template>
 

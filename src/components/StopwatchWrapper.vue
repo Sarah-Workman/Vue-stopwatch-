@@ -10,7 +10,10 @@
 		</div>
 
 		<div id="divider">
-			<LapContainer />
+			<Suspense>
+				<LapContainer />
+				<template #fallback> Loading... </template>
+			</Suspense>
 		</div>
 		<Toast />
 	</div>
