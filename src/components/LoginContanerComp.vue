@@ -13,11 +13,12 @@
 						id="password"
 						v-model="password"
 						placeholder="Password"
+						@keyup.enter="login"
 					/>
 
 					<i
 						:class="
-							isPasswordVisable ? 'fa-solid fa-eye-slash' : 'fa-solid fa-eye'
+							isPasswordVisable ? 'fa-solid fa-eye' : 'fa-solid fa-eye-slash'
 						"
 						@click="visablePassword"
 					>

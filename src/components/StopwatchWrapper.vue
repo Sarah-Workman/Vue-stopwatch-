@@ -8,14 +8,15 @@
 		<div class="stopwatch-wrapper">
 			<Rectangle class="Rectangle" />
 		</div>
-
-		<div id="divider">
+		<div class="toast-container">
+			<Toast />
+		</div>
+		<div id="divider" :class="{ lapScroll: laps.length > 8 }">
 			<Suspense>
 				<LapContainer />
 				<template #fallback> Loading... </template>
 			</Suspense>
 		</div>
-		<Toast />
 	</div>
 </template>
 
@@ -39,7 +40,9 @@
 				lapIds: [],
 			};
 		},
-
+		computed: {
+			...mapState(["laps"]),
+		},
 		activated() {
 			console.log("isActivated");
 		},
@@ -85,8 +88,15 @@
 		left: -22px;
 		margin: 0em 2em 2em 2em;
 		padding: 0em 2em 2em 2em;
+		height: 190px;
 	}
-
+	.lapScroll {
+		overflow-y: scroll;
+	}
+	.toast-container {
+		display: flex;
+		justify-content: center;
+	}
 	.stopwatch-logo-container {
 		display: flex;
 		flex-direction: row;

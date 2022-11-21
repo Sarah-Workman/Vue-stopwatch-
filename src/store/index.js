@@ -90,28 +90,7 @@ export default createStore({
 			const outputHours = state.hours < 10 ? "0" + state.hours : state.hours;
 			return outputHours;
 		},
-		// nullInputs(state) {
-		//need to replace with validation
-		// state.lapSecond === ""
-		// ? (state.lapSecond = state.lapSecond)
-		// : (state.lapSecond = state.lapSecond);
-		// state.lapMinute === ""
-		// ? (state.lapMinute = state.lapMinute)
-		// : (state.lapMinute = state.lapMinute);
-		// state.lapHour === ""
-		// ? (state.lapHour = state.lapHour)
-		// : (state.lapHour = state.lapHour);
 
-		// state.lapHour.length < 2
-		// ? (state.lapHour = `0${state.lapHour}`)
-		// : (state.lapHour = state.lapHour);
-		// state.lapMinute.length < 2
-		// ? (state.lapMinute = `0${state.lapMinute}`)
-		// : (state.lapMinute = state.lapMinute);
-		// state.lapSecond.length < 2
-		// ? (state.lapSecond = `0${state.lapSecond}`)
-		// : (state.lapSecond = state.lapSecond);
-		// },
 		getUniqueLapId: (state) => (lapId) =>
 			state.fireBaseIds.find((id) => id === lapId),
 
@@ -255,6 +234,7 @@ export default createStore({
 			lap.time = payload.time;
 		},
 		replaceLaps(state, payload) {
+			debugger;
 			state.laps.splice(
 				state.laps.findIndex(
 					(object) => object.id == payload.id && object.time == payload.time
@@ -341,7 +321,8 @@ export default createStore({
 			} //maybe a toaster to add data?
 		},
 		async deleteOne({ state }, payload) {
-			// await getDocs(collection(db, "Laps"));
+			debugger;
+
 			const docRef = collection(db, "Users", state.currentUser.uid, "Laps");
 
 			deleteDoc(doc(docRef, payload.lapId));

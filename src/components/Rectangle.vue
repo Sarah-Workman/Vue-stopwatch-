@@ -100,6 +100,7 @@
 				this.$store.dispatch("toastTimeout", 5000);
 			},
 			editSubmitBtnClick() {
+				debugger;
 				if (!this.isEditing) {
 					this.editBtn();
 				} else {

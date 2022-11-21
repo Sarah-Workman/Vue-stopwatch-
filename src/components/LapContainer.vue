@@ -13,53 +13,55 @@
 		/>
 	</div>
 	<div class="lap-container">
-		<div
-			v-for="lap in laps"
-			:key="lap.id"
-			class="lap-wrapper"
-			:class="{
-				'lap-editing': isEditing,
-				'lap-selected': getIsLapSelected(lap.id) && isEditing && !editing,
-			}"
-			@click="!editing ? selectLap(lap.id, lap.time) : null"
-		>
-			<!-- @click="isEditing ? bulkDelete(lap.id) : null" -->
-			<div v-if="lap.id === lapId && editing" class="lap-input-wrapper">
-				<input
-					required=""
-					:placeholder="placeHolderHour"
-					@keyup.enter="checkThenUpdateEnter(lap.id)"
-					v-model="inputHours"
-				/>:
-				<input
-					required=""
-					:placeholder="placeHolderMinute"
-					@keyup.enter="checkThenUpdateEnter(lap.id)"
-					v-model="inputMinutes"
-				/>:
-				<input
-					required=""
-					:placeholder="placeHolderSecond"
-					@keyup.enter="checkThenUpdateEnter(lap.id)"
-					v-model="inputSeconds"
-				/>
+		<TransitionGroup name="fade">
+			<div
+				v-for="lap in laps"
+				:key="lap.id"
+				class="lap-wrapper"
+				:class="{
+					'lap-editing': isEditing,
+					'lap-selected': getIsLapSelected(lap.id) && isEditing && !editing,
+				}"
+				@click="!editing ? selectLap(lap.id, lap.time) : null"
+			>
+				<!-- @click="isEditing ? bulkDelete(lap.id) : null" -->
+				<div v-if="lap.id === lapId && editing" class="lap-input-wrapper">
+					<input
+						required=""
+						:placeholder="placeHolderHour"
+						@keyup.enter="checkThenUpdateEnter(lap.id)"
+						v-model="inputHours"
+					/>:
+					<input
+						required=""
+						:placeholder="placeHolderMinute"
+						@keyup.enter="checkThenUpdateEnter(lap.id)"
+						v-model="inputMinutes"
+					/>:
+					<input
+						required=""
+						:placeholder="placeHolderSecond"
+						@keyup.enter="checkThenUpdateEnter(lap.id)"
+						v-model="inputSeconds"
+					/>
+				</div>
+
+				<p v-else>
+					{{ lap.time }}
+				</p>
+
+				<i
+					@click.self="deleteOne(lap.id, lap.time)"
+					class="fa-solid fa-x"
+					v-if="isEditing"
+				></i
+				><i
+					@click.self="editOne(lap.id)"
+					class="fa-solid fa-pen"
+					v-if="isEditing"
+				></i>
 			</div>
-
-			<p v-else>
-				{{ lap.time }}
-			</p>
-
-			<i
-				@click.self="deleteOne(lap.id, lap.time)"
-				class="fa-solid fa-x"
-				v-if="isEditing"
-			></i
-			><i
-				@click.self="editOne(lap.id)"
-				class="fa-solid fa-pen"
-				v-if="isEditing"
-			></i>
-		</div>
+		</TransitionGroup>
 	</div>
 </template>
 
@@ -151,11 +153,12 @@
 				this.$store.dispatch("toastTimeout", 5000);
 			},
 			deleteOne(id, time) {
+				debugger;
 				console.log(id);
 				this.$store.dispatch("deleteOne", { lapId: id });
 				this.$store.state.editing = true;
 
-				this.$store.commit("replaceLaps", { lapId: id, time: time });
+				this.$store.commit("replaceLaps", { id: id, time: time });
 				this.$store.commit("setToastMsg", "Lap Deleted");
 				this.$store.commit("toggleToast");
 				this.$store.dispatch("toastTimeout", 5000);
@@ -231,14 +234,25 @@
 				getIsLapSelected: "getIsLapSelected",
 			}),
 		},
-
-		//emits: ["store-checked-ids"],
 	};
 </script>
 
 <style scoped lang="scss">
 	$fontStyle: Arial, Helvetica, sans-serif;
 	@mixin flex {
+	}
+	.fade-enter-active {
+		transition: all 0.3s ease-out;
+	}
+
+	.fade-leave-active {
+		transition: all 0.8s cubic-bezier(1, 0.5, 0.8, 1);
+	}
+
+	.fade-enter-from,
+	.fade-leave-to {
+		transform: translateX(20px);
+		opacity: 0;
 	}
 
 	.lap {
