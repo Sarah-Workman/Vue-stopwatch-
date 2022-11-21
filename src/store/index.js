@@ -158,6 +158,7 @@ export default createStore({
 		},
 
 		toggleToast(state) {
+			debugger;
 			state.isToasting = !state.isToasting;
 		},
 		toggleIsUpdating(state) {
@@ -244,6 +245,7 @@ export default createStore({
 		},
 
 		setToastMsg(state, payload) {
+			debugger;
 			state.toast = payload;
 		},
 
@@ -291,9 +293,7 @@ export default createStore({
 			});
 
 			commit("setDbId", response.id);
-			// commit("toasterMsg", "Lap Added");
-			// commit("toggleToast");
-			// setTimeout(commit("toggleToast"), 3000);
+			//
 		},
 
 		async getData({ commit }, user) {
@@ -368,7 +368,6 @@ export default createStore({
 					time: state.selectedObj[index].time,
 				});
 			}
-			//msg for toaster
 		},
 
 		async enroll({ commit }, payload) {

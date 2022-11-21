@@ -84,7 +84,7 @@
 					this.$store.dispatch("addData");
 				}
 
-				this.$store.commit("setToastMsg", "Lap added");
+				this.$store.commit("setToastMsg", "Lap Added");
 				this.$store.commit("toggleToast");
 				this.$store.dispatch("toastTimeout", 5000);
 			},
@@ -95,7 +95,7 @@
 				}
 				this.$store.commit("clearTimeInterval");
 				this.$store.commit("clear");
-				this.$store.commit("setToastMsg", "You reset stopwatch time");
+				this.$store.commit("setToastMsg", "Stopwatch Time Reset");
 				this.$store.commit("toggleToast");
 				this.$store.dispatch("toastTimeout", 5000);
 			},
@@ -114,13 +114,20 @@
 				if (this.$store.state.selectedIds.length > 0) {
 					debugger;
 					this.$store.dispatch("bulkDelete");
+					this.$store.commit(
+						"setToastMsg",
+						`Deleted ${this.$store.state.selectedIds.length} Lap(s)`
+					);
+					this.$store.commit("toggleToast");
+					this.$store.dispatch("toastTimeout", 5000);
 					this.$store.commit("clearSelected");
 				} else {
 				}
 				if (this.$store.state.editing) {
 					this.$store.commit("toggleEdit");
 				}
-				this.$store.commit("toggleIsEditing");
+
+				setTimeout(() => this.$store.commit("toggleIsEditing"), 780);
 				this.$store.commit("clearErrors");
 			},
 			stopBtn() {

@@ -145,6 +145,9 @@
 				});
 				this.$store.commit("toggleChecked");
 				this.$store.commit("clearErrors");
+				this.inputHours = "";
+				this.inputMinutes = "";
+				this.inputSeconds = "";
 				this.$store.state.editing = false;
 
 				this.$store.commit("toggleIsUpdating");
@@ -309,7 +312,7 @@
 			height: 39px;
 
 			& input {
-				width: 1em;
+				width: 1.08em;
 				border-top: none;
 				border-left: none;
 				border-right: none;

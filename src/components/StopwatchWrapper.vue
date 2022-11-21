@@ -89,6 +89,7 @@
 		margin: 0em 2em 2em 2em;
 		padding: 0em 2em 2em 2em;
 		height: 190px;
+		width: 1100px;
 	}
 	.lapScroll {
 		overflow-y: scroll;
