@@ -190,6 +190,9 @@ export default createStore({
 		toggleChecked(state) {
 			state.checked = !state.checked;
 		},
+		toggleEdit(state) {
+			state.editing = !state.editing;
+		},
 
 		setLapTime(state, payload) {
 			state.lapTime = {
@@ -211,8 +214,16 @@ export default createStore({
 		clearLaps(state) {
 			state.laps = [];
 		},
+		clearErrors(state) {
+			state.formErrors = [];
+		},
 		setErrors(state, payload) {
-			state.formErrors.push(payload);
+			debugger;
+			if (state.formErrors.find((string) => string.error === payload.error)) {
+				return;
+			} else {
+				state.formErrors.push(payload);
+			}
 		},
 		setLaps(state, lapTimeString) {
 			state.laps.push(lapTimeString);
@@ -244,7 +255,6 @@ export default createStore({
 			lap.time = payload.time;
 		},
 		replaceLaps(state, payload) {
-			debugger;
 			state.laps.splice(
 				state.laps.findIndex(
 					(object) => object.id == payload.id && object.time == payload.time
@@ -261,12 +271,10 @@ export default createStore({
 			state.currentUser = payload;
 		},
 		setSelected(state, payload) {
-			debugger;
 			state.selectedObj.push(payload);
 			state.selectedIds.push(payload.id);
 		},
 		removeSelected(state, payload) {
-			debugger;
 			state.selectedIds.splice(
 				state.selectedIds.findIndex((object) => object.id === payload.id),
 				1
@@ -281,13 +289,11 @@ export default createStore({
 	},
 	actions: {
 		async toastTimeout({ commit }, time) {
-			debugger;
 			setTimeout(() => {
 				commit("toggleToast");
 			}, await time);
 		},
 		async addData({ state, commit }) {
-			debugger;
 			const snapShot = doc(db, "Users", state.currentUser.uid);
 			let lapTime = {
 				lapHour: state.outputhours,
@@ -295,9 +301,7 @@ export default createStore({
 				lapSecond: state.outputseconds,
 			};
 			const response = await addDoc(collection(snapShot, "Laps"), {
-				lapHour: lapTime.lapHour,
-				lapMinute: lapTime.Minute,
-				lapSecond: lapTime.lapSecond,
+				lapTime,
 				timestamp: serverTimestamp(),
 			});
 			commit("setLapTime", {
@@ -313,8 +317,6 @@ export default createStore({
 		},
 
 		async getData({ commit }, user) {
-			debugger;
-
 			const snapShot = collection(db, "Users", user.uid, "Laps");
 			if (snapShot !== null) {
 				const querySnapshot = await getDocs(snapShot);
@@ -339,35 +341,13 @@ export default createStore({
 			} //maybe a toaster to add data?
 		},
 		async deleteOne({ state }, payload) {
-			debugger;
 			// await getDocs(collection(db, "Laps"));
 			const docRef = collection(db, "Users", state.currentUser.uid, "Laps");
 
 			deleteDoc(doc(docRef, payload.lapId));
 		},
-		// needs work getPlaceholder
-		async getPlaceholder({ state, commit }) {
-			const querySnapshot = await getDocs(collection(db, "Laps"));
-			querySnapshot.forEach((doc) => {
-				// doc.data() is never undefined for query doc snapshots
-				console.log(doc.id, " => ", doc.data());
-
-				let lapHour = doc.data().lapHour;
-
-				let lapMinute = doc.data().lapMinute;
-
-				let lapSecond = doc.data().lapSecond;
-
-				if (doc.id === state.lapId) {
-					commit("setPlaceholderHour", lapHour);
-					commit("setPlaceholderMinute", lapMinute);
-					commit("setPlaceholderSecond", lapSecond);
-				}
-			});
-		},
 
 		async updateLap({ state, commit }, payload) {
-			debugger;
 			const querySnapshot = doc(
 				db,
 				"Users",
@@ -394,7 +374,6 @@ export default createStore({
 
 		async bulkDelete({ state, commit }) {
 			debugger;
-
 			const functions = getFunctions();
 			const bulkDelete = httpsCallable(functions, "bulkDelete");
 			bulkDelete({

@@ -83,8 +83,8 @@
 		opacity: 1;
 		top: 261px;
 		left: -22px;
-		width: 1129px;
-		height: 433px;
+		margin: 0em 2em 2em 2em;
+		padding: 0em 2em 2em 2em;
 	}
 
 	.stopwatch-logo-container {

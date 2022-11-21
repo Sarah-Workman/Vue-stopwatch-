@@ -13,6 +13,7 @@
 				<ResetBtn @reset="resetBtn" />
 			</div>
 		</div>
+		<inputErrorComp />
 	</div>
 </template>
 <script>
@@ -21,9 +22,10 @@
 	import ResetBtn from "./ResetBtn.vue";
 	import LapBtn from "./LapBtn.vue";
 	import EditBtn from "./EditBtnComp.vue";
+	import inputErrorComp from "./InputErrorComp.vue";
 	export default {
 		name: "Rectangle",
-		components: { StartBtn, LapBtn, ResetBtn, EditBtn },
+		components: { StartBtn, LapBtn, ResetBtn, EditBtn, inputErrorComp },
 		methods: {
 			...mapActions([
 				"incrementSeconds",
@@ -48,10 +50,10 @@
 				"toggleRunning",
 				"clearTimeInterval",
 				"setToastMsg",
+				"clearErrors",
+				"toggleEditing",
 			]),
 			startStopBtnClick() {
-				debugger;
-
 				if (!this.isRunning) {
 					this.startBtn();
 				} else {
@@ -81,7 +83,7 @@
 				if (this.$store.state.isRunning === true) {
 					this.$store.dispatch("addData");
 				}
-				debugger;
+
 				this.$store.commit("setToastMsg", "Lap added");
 				this.$store.commit("toggleToast");
 				this.$store.dispatch("toastTimeout", 5000);
@@ -98,8 +100,6 @@
 				this.$store.dispatch("toastTimeout", 5000);
 			},
 			editSubmitBtnClick() {
-				debugger;
-
 				if (!this.isEditing) {
 					this.editBtn();
 				} else {
@@ -111,11 +111,16 @@
 			},
 			submitBtn() {
 				if (this.$store.state.selectedIds.length > 0) {
+					debugger;
 					this.$store.dispatch("bulkDelete");
 					this.$store.commit("clearSelected");
 				} else {
 				}
+				if (this.$store.state.editing) {
+					this.$store.commit("toggleEdit");
+				}
 				this.$store.commit("toggleIsEditing");
+				this.$store.commit("clearErrors");
 			},
 			stopBtn() {
 				this.$store.commit("clearTimeInterval");
@@ -138,6 +143,7 @@
 				"laps",
 				"isEditing",
 				"toastTimeout",
+				"editing",
 			]),
 
 			...mapGetters(["checkSeconds", "checkMinutes", "checkHours"]),

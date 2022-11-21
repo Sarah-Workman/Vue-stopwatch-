@@ -60,11 +60,6 @@
 				v-if="isEditing"
 			></i>
 		</div>
-		<div class="lap-input-form-errors-container">
-			<p v-show="formErrors.length > 0" class="lap-input-form-errors">
-				{{ formErrors }}
-			</p>
-		</div>
 	</div>
 </template>
 
@@ -82,12 +77,14 @@
 				// inputs: [{}],
 			};
 		},
+
 		methods: {
 			...mapMutations([
 				"setId",
 				"setInputValues",
 				"setSelectedIds",
 				"setToastMsg",
+				"clearErrors",
 			]),
 			...mapActions([
 				"getPlaceholder",
@@ -100,59 +97,54 @@
 			]),
 
 			editOne(lapId) {
-				debugger;
 				this.$store.state.editing = true;
 
 				let lapToEdit = this.getLapById(lapId);
 
 				this.$store.commit("setId", lapToEdit);
 				this.$store.commit("toggleIsUpdating");
-				this.$store.dispatch("getPlaceholder");
 			},
 			checkThenUpdateEnter(id) {
 				if (this.$store.state.checked) {
-					update(id);
+					this.update(id);
 				} else {
-					check(id);
+					this.check(id);
 				}
 			},
 			check(id) {
+				debugger;
 				if (
-					this.inputHours.length !== 2 &&
-					this.inputMinutes.length !== 2 &&
-					this.inputSeconds.length !== 2
+					(this.inputHours.length !== 2 &&
+						this.inputMinutes.length !== 2 &&
+						this.inputSeconds.length !== 2) ||
+					this.inputHours === "" ||
+					this.inputMinutes === "" ||
+					this.inputSeconds == ""
 				) {
-					this.$store.commit(
-						"setErrors",
-						"Hours, Minutes, and Seconds must have two digits"
-					);
-				} else if (
-					this.inputHours === undefined ||
-					this.inputMinutes === undefined ||
-					this.inputSeconds == undefined
-				) {
-					this.$store.commit("setErrors", "A value in all boxes is requred");
+					this.$store.commit("setErrors", {
+						error:
+							"Hours, Minutes, and Seconds must have two digits, and a value in all boxes is requred for update",
+					});
 				} else {
 					this.$store.commit("toggleChecked");
-					update(id);
+					this.update(id);
 				}
 			},
 
 			update(id) {
-				debugger;
 				this.$store.commit("setInputValues", {
 					lapHour: this.inputHours,
 					lapMinute: this.inputMinutes,
 					lapSecond: this.inputSeconds,
 				});
 
-				// this.$store.getters.nullInputs;
-
 				this.$store.dispatch("updateLap", {
 					lapId: id,
 				});
-				this.state.commit("toggleChecked");
+				this.$store.commit("toggleChecked");
+				this.$store.commit("clearErrors");
 				this.$store.state.editing = false;
+
 				this.$store.commit("toggleIsUpdating");
 				this.$store.commit("setToastMsg", "Lap Updated");
 				this.$store.commit("toggleToast");
@@ -175,8 +167,6 @@
 			//will use this info in RectangleComp.vue for bulkDelete
 			//this is a multiple delete option
 			selectLap(lapId, lapTime) {
-				debugger;
-
 				if (this.getIsLapSelected(lapId)) {
 					this.$store.commit("removeSelected", { id: lapId, time: lapTime });
 				} else {
@@ -187,34 +177,33 @@
 			selectAllUnselectAll4DeletionCheckboxClick() {
 				debugger;
 				if (!this.isSelecting) {
-					selectAllForDeletion();
+					this.selectAllForDeletion();
 				} else {
-					unselectAllForDeletion();
+					this.unselectAllForDeletion();
+				}
+			},
+
+			selectAllForDeletion() {
+				debugger;
+				this.$store.commit("toggleIsSelecting");
+				for (let index = 0; index < this.$store.state.laps.length; index++) {
+					this.$store.commit("setSelected", {
+						id: this.$store.state.laps[index].id,
+						time: this.$store.state.laps[index].time,
+					});
+				}
+			},
+			unselectAllForDeletion() {
+				debugger;
+				this.$store.commit("toggleIsSelecting");
+				for (let index = 0; index < this.$store.state.laps.length; index++) {
+					this.$store.commit("removeSelected", {
+						id: this.$store.state.laps[index].id,
+						time: this.$store.state.laps[index].time,
+					});
 				}
 			},
 		},
-
-		selectAllForDeletion() {
-			debugger;
-			this.$store.commit("toggleIsSelecting");
-			for (let index = 0; index < this.$store.state.laps.length; index++) {
-				this.$store.commit("setSelected", {
-					id: this.$store.state.laps[index].id,
-					time: this.$store.state.laps[index].time,
-				});
-			}
-		},
-		unselectAllForDeletion() {
-			debugger;
-			this.$store.commit("toggleIsSelecting");
-			for (let index = 0; index < this.$store.state.laps.length; index++) {
-				this.$store.commit("removeSelected", {
-					id: this.$store.state.laps[index].id,
-					time: this.$store.state.laps[index].time,
-				});
-			}
-		},
-
 		computed: {
 			...mapState([
 				"laps",
@@ -269,9 +258,6 @@
 		&-input-form-errors-container {
 			display: flex;
 			flex-direction: column;
-		}
-		&-input-form-errors {
-			color: red;
 		}
 
 		&-wrapper {
