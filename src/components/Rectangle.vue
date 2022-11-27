@@ -127,7 +127,7 @@
 					this.$store.commit("toggleEdit");
 				}
 
-				setTimeout(() => this.$store.commit("toggleIsEditing"), 780);
+				setTimeout(() => this.$store.commit("toggleIsEditing"), 790);
 				this.$store.commit("clearErrors");
 			},
 			stopBtn() {

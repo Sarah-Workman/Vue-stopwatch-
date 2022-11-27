@@ -4,6 +4,8 @@
 
 The vision of the project was to expand on my knowledge base. I was able to get a feel for a real life project, by working with a designer and getting help when needed from my mentor. I got the opportunity to implement some awesome tools such as a state managment vuex, and a lighting fast database that really is a one stop shop for all backend needs.
 
+<video id="appPreview" height="500" width="1200" autoplay><source src="previewVideo.mp4" type="video/mp4"></video>
+
 ## Issues
 
 **Issue # 1**<br> I ran into a problem trying to update my document. I needed the unique document ID attached somehow to my v-for as a unique id. That way when I was ready to delete or update it would make that process easier.
@@ -72,7 +74,3 @@ Authentication is a simple email and password auth.
 
 I worked directly with a product designer on the style, but was able give my input every step of the way.<br>
 The design is dynamic using flexbox, and grid for my layout.
-
-```
-
-```

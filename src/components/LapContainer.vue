@@ -71,7 +71,6 @@
 	export default {
 		name: "LapContainer",
 		data() {
-			debugger;
 			return {
 				inputHours: "",
 				inputMinutes: "",
@@ -159,7 +158,7 @@
 				debugger;
 				console.log(id);
 				this.$store.dispatch("deleteOne", { lapId: id });
-				this.$store.state.editing = true;
+				//this.$store.state.editing = true;
 
 				this.$store.commit("replaceLaps", { id: id, time: time });
 				this.$store.commit("setToastMsg", "Lap Deleted");
@@ -173,6 +172,7 @@
 			//will use this info in RectangleComp.vue for bulkDelete
 			//this is a multiple delete option
 			selectLap(lapId, lapTime) {
+				debugger;
 				if (this.getIsLapSelected(lapId)) {
 					this.$store.commit("removeSelected", { id: lapId, time: lapTime });
 				} else {

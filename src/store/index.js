@@ -253,6 +253,7 @@ export default createStore({
 			state.currentUser = payload;
 		},
 		setSelected(state, payload) {
+			debugger;
 			state.selectedObj.push(payload);
 			state.selectedIds.push(payload.id);
 		},
