@@ -60,6 +60,7 @@ export default createStore({
 		isToasting: false,
 		checked: false,
 		isLoginFailed: false,
+		isDeleting: false,
 		fireBaseIds: [],
 		selectedObj: [],
 		selectedIds: [],
@@ -159,7 +160,6 @@ export default createStore({
 		},
 
 		toggleToast(state) {
-			debugger;
 			state.isToasting = !state.isToasting;
 		},
 		toggleIsUpdating(state) {
@@ -176,6 +176,9 @@ export default createStore({
 		},
 		toggleIsLoginFailed(state) {
 			state.isLoginFailed = !state.isLoginFailed;
+		},
+		toggleIsDeleting(state) {
+			state.isDeleting = !state.isDeleting;
 		},
 
 		setLapTime(state, payload) {
@@ -363,6 +366,7 @@ export default createStore({
 		},
 
 		async bulkDelete({ state, commit }) {
+			debugger;
 			const functions = getFunctions();
 			const bulkDelete = httpsCallable(functions, "bulkDelete");
 			bulkDelete({

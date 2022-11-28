@@ -22,7 +22,7 @@
 					'lap-editing': isEditing,
 					'lap-selected': getIsLapSelected(lap.id) && isEditing && !editing,
 				}"
-				@click="!editing ? selectLap(lap.id, lap.time) : null"
+				@click="!editing && !isDeleting ? selectLap(lap.id, lap.time) : null"
 			>
 				<!-- @click="isEditing ? bulkDelete(lap.id) : null" -->
 				<div v-if="lap.id === lapId && editing" class="lap-input-wrapper">
@@ -92,6 +92,7 @@
 				"setSelectedIds",
 				"setToastMsg",
 				"clearErrors",
+				"toggleIsDeleting",
 			]),
 			...mapActions([
 				"getPlaceholder",
@@ -163,8 +164,8 @@
 			deleteOne(id, time) {
 				debugger;
 				console.log(id);
+				this.$store.commit("toggleIsDeleting");
 				this.$store.dispatch("deleteOne", { lapId: id });
-				//this.$store.state.editing = true;
 
 				this.$store.commit("replaceLaps", { id: id, time: time });
 				this.$store.commit("setToastMsg", "Lap Deleted");
@@ -179,10 +180,15 @@
 			//this is a multiple delete option
 			selectLap(lapId, lapTime) {
 				debugger;
-				if (this.getIsLapSelected(lapId)) {
-					this.$store.commit("removeSelected", { id: lapId, time: lapTime });
-				} else {
-					this.$store.commit("setSelected", { id: lapId, time: lapTime });
+				if (!this.$store.state.isDeleting) {
+					if (this.getIsLapSelected(lapId)) {
+						this.$store.commit("removeSelected", { id: lapId, time: lapTime });
+					} else {
+						this.$store.commit("setSelected", { id: lapId, time: lapTime });
+					}
+				}
+				{
+					this.$store.commit("toggleIsDeleting");
 				}
 			},
 
@@ -236,6 +242,7 @@
 				"currentSelected",
 				"formErrors",
 				"checked",
+				"isDeleting",
 			]),
 			...mapGetters({
 				getLapById: "getUniqueLapId",
