@@ -59,6 +59,7 @@ export default createStore({
 		currentSelected: false,
 		isToasting: false,
 		checked: false,
+		isLoginFailed: false,
 		fireBaseIds: [],
 		selectedObj: [],
 		selectedIds: [],
@@ -173,6 +174,9 @@ export default createStore({
 		toggleEdit(state) {
 			state.editing = !state.editing;
 		},
+		toggleIsLoginFailed(state) {
+			state.isLoginFailed = !state.isLoginFailed;
+		},
 
 		setLapTime(state, payload) {
 			state.lapTime = {
@@ -271,10 +275,10 @@ export default createStore({
 		},
 	},
 	actions: {
-		async toastTimeout({ commit }, time) {
+		toastTimeout({ commit }, time) {
 			setTimeout(() => {
 				commit("toggleToast");
-			}, await time);
+			}, time);
 		},
 		async addData({ state, commit }) {
 			const snapShot = doc(db, "Users", state.currentUser.uid);
@@ -283,47 +287,50 @@ export default createStore({
 				lapMinute: state.outputminutes,
 				lapSecond: state.outputseconds,
 			};
-			const response = await addDoc(collection(snapShot, "Laps"), {
-				lapTime,
-				timestamp: serverTimestamp(),
-			});
-			commit("setLapTime", {
-				lapId: response.id,
-				time: `${lapTime.lapHour}:${lapTime.lapMinute}:${lapTime.lapSecond}`,
-				timestamp: serverTimestamp(),
-			});
+			try {
+				const response = await addDoc(collection(snapShot, "Laps"), {
+					lapTime,
+					timestamp: serverTimestamp(),
+				});
 
-			commit("setDbId", response.id);
+				commit("setLapTime", {
+					lapId: response.id,
+					time: `${lapTime.lapHour}:${lapTime.lapMinute}:${lapTime.lapSecond}`,
+					timestamp: serverTimestamp(),
+				});
+
+				commit("setDbId", response.id);
+			} catch {}
 			//
 		},
 
 		async getData({ commit }, user) {
 			const snapShot = collection(db, "Users", user.uid, "Laps");
 			if (snapShot !== null) {
-				const querySnapshot = await getDocs(snapShot);
+				try {
+					const querySnapshot = await getDocs(snapShot);
 
-				querySnapshot.forEach((doc) => {
-					// doc.data() is never undefined for query doc snapshots
-					console.log(doc.id, " => ", doc.data());
+					querySnapshot.forEach((doc) => {
+						// doc.data() is never undefined for query doc snapshots
+						console.log(doc.id, " => ", doc.data());
 
-					let lapHour = doc.data().lapTime.lapHour;
+						let lapHour = doc.data().lapTime.lapHour;
 
-					let lapMinute = doc.data().lapTime.lapMinute;
+						let lapMinute = doc.data().lapTime.lapMinute;
 
-					let lapSecond = doc.data().lapTime.lapSecond;
+						let lapSecond = doc.data().lapTime.lapSecond;
 
-					commit("setLaps", {
-						id: doc.id,
-						time: `${lapHour}:${lapMinute}:${lapSecond}`,
-						timestamp: doc.timestamp,
+						commit("setLaps", {
+							id: doc.id,
+							time: `${lapHour}:${lapMinute}:${lapSecond}`,
+							timestamp: doc.timestamp,
+						});
+						commit("setDbId", doc.id);
 					});
-					commit("setDbId", doc.id);
-				});
+				} catch {}
 			} //maybe a toaster to add data?
 		},
 		async deleteOne({ state }, payload) {
-			debugger;
-
 			const docRef = collection(db, "Users", state.currentUser.uid, "Laps");
 
 			deleteDoc(doc(docRef, payload.lapId));
@@ -343,10 +350,11 @@ export default createStore({
 				lapMinute: state.lapMinute,
 				lapSecond: state.lapSecond,
 			};
-
-			await updateDoc(querySnapshot, {
-				lapTime,
-			});
+			try {
+				await updateDoc(querySnapshot, {
+					lapTime,
+				});
+			} catch {}
 			commit("updateLaps", {
 				time: `${lapTime.lapHour}:${lapTime.lapMinute}:${lapTime.lapSecond}`,
 
@@ -355,7 +363,6 @@ export default createStore({
 		},
 
 		async bulkDelete({ state, commit }) {
-			debugger;
 			const functions = getFunctions();
 			const bulkDelete = httpsCallable(functions, "bulkDelete");
 			bulkDelete({
@@ -379,37 +386,36 @@ export default createStore({
 				payload.password
 			).then(async (userCredential) => {
 				const user = userCredential.user;
-
-				await setDoc(doc(db, "Users", user.uid), { email: user.email });
-				commit("setCurrentUser", user);
+				try {
+					await setDoc(doc(db, "Users", user.uid), { email: user.email });
+					commit("setCurrentUser", user);
+				} catch {}
 			});
 		},
-		async login({ commit, dispatch }, payload) {
+		async login({ commit, dispatch, state }, payload) {
 			const auth = getAuth();
 			signInWithEmailAndPassword(auth, payload.email, payload.password)
 				.then((userCredential) => {
 					//to do make api call to get laps for a user
 					//after api call then set laps in state
-
+					debugger;
 					const user = userCredential.user;
 					commit("setCurrentUser", user);
 					dispatch("getData", user);
 
 					router.push("/Homescreen");
+					if (state.isLoginFailed) {
+						commit("toggleIsLoginFailed");
+					}
 				})
 				.catch((error) => {
-					const errorCode = error.code;
-					const errorMessage = error.message;
-					console.log("error on login");
+					commit("toggleIsLoginFailed");
 				});
 		},
 		async loginChange({ commit, dispatch }) {
 			const auth = getAuth();
 			onAuthStateChanged(auth, (user) => {
 				if (user) {
-					//user is signed in
-					//const isAuthed = true;
-					//commit("storeCurrentUserId", uid);
 				} else {
 					//user is signed out
 
@@ -421,7 +427,6 @@ export default createStore({
 			const auth = getAuth();
 			signOut(auth)
 				.then(() => {
-					//sign-out sucessful
 					commit("clearLaps");
 					commit("clear");
 					commit("clearSelected");

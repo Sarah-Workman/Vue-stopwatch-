@@ -32,15 +32,6 @@
 					password: this.password,
 				});
 				this.$router.push("/Homescreen");
-
-				// if (
-				// 	this.$store.state.user.uid === this.$store.state.currentUserId &&
-				// 	this.$store.state.user.isAuthed === true
-				// ) {
-				// 	this.$router.push("/Homescreen");
-				// } else {
-				// 	this.$router.push("/Login");
-				// }
 			},
 		},
 	};

@@ -4,7 +4,7 @@
 
 The vision of the project was to expand on my knowledge base. I was able to get a feel for a real life project, by working with a designer and getting help when needed from my mentor. I got the opportunity to implement some awesome tools such as a state managment vuex, and a lighting fast database that really is a one stop shop for all backend needs.
 
-<video id="appPreview" height="500" width="1200" autoplay><source src="previewVideo.mp4" type="video/mp4"></video>
+<video id="appPreview" height="500" width="500" autoplay><source src="previewVideo.mp4" type="video/mp4"></video>
 
 ## Issues
 

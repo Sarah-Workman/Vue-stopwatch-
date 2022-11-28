@@ -197,23 +197,7 @@
 		flex-direction: column;
 		row-gap: 0.5em;
 	}
-	// .delete {
-	// &-all-label {
-	// text-align: left;
-	// font: normal normal normal 20px/24px Roboto;
-	// letter-spacing: 0.19px;
-	// color: #000000;
-	// opacity: 1;
-	// width: 93px;
-	// height: 26px;
-	// }
-	// &-all {
-	// width: 35px;
-	// height: 35px;
-	// border: 1px solid #000000;
-	// opacity: 1;
-	// }
-	// }
+
 	.stopwatch-fun-btns {
 		display: flex;
 		column-gap: 1em;

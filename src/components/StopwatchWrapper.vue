@@ -8,9 +8,7 @@
 		<div class="stopwatch-wrapper">
 			<Rectangle class="Rectangle" />
 		</div>
-		<div class="toast-container">
-			<Toast />
-		</div>
+
 		<div id="divider" :class="{ lapScroll: laps.length > 8 }">
 			<Suspense>
 				<LapContainer />
@@ -26,14 +24,12 @@
 	import { mapState } from "vuex";
 
 	import LapContainer from "./LapContainer.vue";
-	import Toast from "./ToastComp.vue";
 
 	export default {
 		name: "StopWatchWrapper",
 		components: {
 			Rectangle,
 			LapContainer,
-			Toast,
 		},
 		data() {
 			return {
@@ -94,10 +90,7 @@
 	.lapScroll {
 		overflow-y: scroll;
 	}
-	.toast-container {
-		display: flex;
-		justify-content: center;
-	}
+
 	.stopwatch-logo-container {
 		display: flex;
 		flex-direction: row;
@@ -108,6 +101,7 @@
 			cursor: pointer;
 			justify-content: center;
 			margin-top: 1.5em;
+			font: hevetica nueue;
 		}
 	}
 </style>

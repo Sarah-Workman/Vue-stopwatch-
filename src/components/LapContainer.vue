@@ -63,10 +63,14 @@
 			</div>
 		</TransitionGroup>
 	</div>
+	<div class="toast-container">
+		<Toast />
+	</div>
 </template>
 
 <script>
 	import { mapGetters, mapMutations, mapState, mapActions } from "vuex";
+	import Toast from "./ToastComp.vue";
 
 	export default {
 		name: "LapContainer",
@@ -78,7 +82,9 @@
 				// inputs: [{}],
 			};
 		},
-
+		components: {
+			Toast,
+		},
 		methods: {
 			...mapMutations([
 				"setId",
@@ -344,5 +350,10 @@
 	}
 	.delete-all-container {
 		align-content: center;
+	}
+	.toast-container {
+		display: flex;
+		justify-content: center;
+		align-content: flex-end;
 	}
 </style>
