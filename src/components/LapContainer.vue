@@ -22,26 +22,26 @@
 					'lap-editing': isEditing,
 					'lap-selected': getIsLapSelected(lap.id) && isEditing && !editing,
 				}"
-				@click="!editing && !isDeleting ? selectLap(lap.id, lap.time) : null"
+				@click="lapSelectCheck(lap.id, lap.time)"
 			>
 				<!-- @click="isEditing ? bulkDelete(lap.id) : null" -->
 				<div v-if="lap.id === lapId && editing" class="lap-input-wrapper">
 					<input
 						required=""
 						:placeholder="placeHolderHour"
-						@keyup.enter="checkThenUpdateEnter(lap.id)"
+						@input="shareInput()"
 						v-model="inputHours"
 					/>:
 					<input
 						required=""
 						:placeholder="placeHolderMinute"
-						@keyup.enter="checkThenUpdateEnter(lap.id)"
+						@input="shareInput()"
 						v-model="inputMinutes"
 					/>:
 					<input
 						required=""
 						:placeholder="placeHolderSecond"
-						@keyup.enter="checkThenUpdateEnter(lap.id)"
+						@input="shareInput()"
 						v-model="inputSeconds"
 					/>
 				</div>
@@ -104,91 +104,48 @@
 				"toastTimeout",
 			]),
 
-			editOne(lapId) {
+			editOne(id) {
+				debugger;
 				this.$store.state.editing = true;
 
-				let lapToEdit = this.getLapById(lapId);
+				let lapToEdit = this.getLapById(id);
 
 				this.$store.commit("setId", lapToEdit);
 				this.$store.commit("toggleIsUpdating");
-			},
-			checkThenUpdateEnter(id) {
-				if (this.$store.state.checked) {
-					this.update(id);
-				} else {
-					this.check(id);
-				}
-			},
-			check(id) {
-				debugger;
-				if (
-					(this.inputHours.length !== 2 &&
-						this.inputMinutes.length !== 2 &&
-						this.inputSeconds.length !== 2) ||
-					this.inputHours === "" ||
-					this.inputMinutes === "" ||
-					this.inputSeconds == ""
-				) {
-					this.$store.commit("setErrors", {
-						error:
-							"Hours, Minutes, and Seconds must have two digits, and a value in all boxes is requred for update",
-					});
-				} else {
-					this.$store.commit("toggleChecked");
-					this.update(id);
-				}
-			},
 
-			update(id) {
+				// this.$store.commit("setUpdateId", id);
+			},
+			shareInput() {
+				debugger;
+				//so if I do an input event it could run this each time what I could run into if this happens is
+				// "" and if its blank a second time
+				// I just hate it having to run through it each input.. maybe I should do an v-for for the input?
 				this.$store.commit("setInputValues", {
 					lapHour: this.inputHours,
 					lapMinute: this.inputMinutes,
 					lapSecond: this.inputSeconds,
 				});
-
-				this.$store.dispatch("updateLap", {
-					lapId: id,
-				});
-				this.$store.commit("toggleChecked");
-				this.$store.commit("clearErrors");
-				this.inputHours = "";
-				this.inputMinutes = "";
-				this.inputSeconds = "";
-				this.$store.state.editing = false;
-
-				this.$store.commit("toggleIsUpdating");
-				this.$store.commit("setToastMsg", "Lap Updated");
-				this.$store.commit("toggleToast");
-				this.$store.dispatch("toastTimeout", 5000);
-			},
-			deleteOne(id, time) {
-				debugger;
-				console.log(id);
-				this.$store.commit("toggleIsDeleting");
-				this.$store.dispatch("deleteOne", { lapId: id });
-
-				this.$store.commit("replaceLaps", { id: id, time: time });
-				this.$store.commit("setToastMsg", "Lap Deleted");
-				this.$store.commit("toggleToast");
-				this.$store.dispatch("toastTimeout", 5000);
 			},
 			//consider changing the name
 			add(uid) {
 				this.$store.commit("currentUser", uid);
 			},
+
+			lapSelectCheck(id, time) {
+				debugger;
+				if (!this.$store.state.editing && !this.$store.state.isDeleting) {
+					this.selectLap(id, time);
+				} else {
+					this.$store.commit("toggleIsDeleting");
+				}
+			},
 			//will use this info in RectangleComp.vue for bulkDelete
 			//this is a multiple delete option
 			selectLap(lapId, lapTime) {
-				debugger;
-				if (!this.$store.state.isDeleting) {
-					if (this.getIsLapSelected(lapId)) {
-						this.$store.commit("removeSelected", { id: lapId, time: lapTime });
-					} else {
-						this.$store.commit("setSelected", { id: lapId, time: lapTime });
-					}
-				}
-				{
-					this.$store.commit("toggleIsDeleting");
+				if (this.getIsLapSelected(lapId)) {
+					this.$store.commit("removeSelected", { id: lapId, time: lapTime });
+				} else {
+					this.$store.commit("setSelected", { id: lapId, time: lapTime });
 				}
 			},
 
