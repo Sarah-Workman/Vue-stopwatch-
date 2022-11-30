@@ -22,7 +22,7 @@
 					'lap-editing': isEditing,
 					'lap-selected': getIsLapSelected(lap.id) && isEditing && !editing,
 				}"
-				@click="!editing && !isDeleting ? selectLap(lap.id, lap.time) : null"
+				@click="!editing ? selectLap(lap.id, lap.time) : null"
 			>
 				<!-- @click="isEditing ? bulkDelete(lap.id) : null" -->
 				<div v-if="lap.id === lapId && editing" class="lap-input-wrapper">
@@ -164,13 +164,15 @@
 			deleteOne(id, time) {
 				debugger;
 				console.log(id);
-				this.$store.commit("toggleIsDeleting");
+
 				this.$store.dispatch("deleteOne", { lapId: id });
 
 				this.$store.commit("replaceLaps", { id: id, time: time });
 				this.$store.commit("setToastMsg", "Lap Deleted");
 				this.$store.commit("toggleToast");
 				this.$store.dispatch("toastTimeout", 5000);
+
+				console.log(this.$store.state.isDeleting);
 			},
 			//consider changing the name
 			add(uid) {
@@ -180,15 +182,11 @@
 			//this is a multiple delete option
 			selectLap(lapId, lapTime) {
 				debugger;
-				if (!this.$store.state.isDeleting) {
-					if (this.getIsLapSelected(lapId)) {
-						this.$store.commit("removeSelected", { id: lapId, time: lapTime });
-					} else {
-						this.$store.commit("setSelected", { id: lapId, time: lapTime });
-					}
-				}
-				{
-					this.$store.commit("toggleIsDeleting");
+
+				if (this.getIsLapSelected(lapId)) {
+					this.$store.commit("removeSelected", { id: lapId, time: lapTime });
+				} else {
+					this.$store.commit("setSelected", { id: lapId, time: lapTime });
 				}
 			},
 
