@@ -2,7 +2,7 @@
 	<button
 		@click="$emit('start')"
 		class="start-btn"
-		:class="{ stopBtnStyle: isRunning === true }"
+		:class="{ stopBtnStyle: isRunning }"
 	>
 		{{ getBtnTxt }}
 	</button>
