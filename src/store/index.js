@@ -46,6 +46,7 @@ export default createStore({
 		lapTime: "",
 		toast: "",
 		editValue: {},
+		updateId: "",
 
 		currentUser: "",
 		isRunning: false,
@@ -66,6 +67,7 @@ export default createStore({
 		selectedIds: [],
 		formErrors: [],
 		lapId: "",
+		//check on lapId
 		interval: undefined,
 	},
 	getters: {
@@ -233,9 +235,14 @@ export default createStore({
 		},
 
 		setInputValues(state, payload) {
+			debugger;
 			state.lapHour = payload.lapHour;
 			state.lapMinute = payload.lapMinute;
 			state.lapSecond = payload.lapSecond;
+		},
+
+		setUpdateId(state, payload) {
+			state.updateId = payload;
 		},
 		updateLaps(state, payload) {
 			let lap = state.laps.find((lap) => lap.id == payload.id);

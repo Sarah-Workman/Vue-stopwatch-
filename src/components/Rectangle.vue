@@ -104,24 +104,20 @@
 				if (!this.isEditing) {
 					this.editBtn();
 				} else {
-					this.submitBtn();
+					this.submitUpdateBulkDeleteBtnClick();
 				}
 			},
 			editBtn() {
 				this.$store.commit("toggleIsEditing");
 			},
-			submitBtn() {
+			submitUpdateBulkDeleteBtnClick() {
+				debugger;
 				if (this.$store.state.selectedIds.length > 0) {
-					debugger;
-					this.$store.dispatch("bulkDelete");
-					this.$store.commit(
-						"setToastMsg",
-						`Deleted ${this.$store.state.selectedIds.length} Lap(s)`
-					);
-					this.$store.commit("toggleToast");
-					this.$store.dispatch("toastTimeout", 5000);
-					this.$store.commit("clearSelected");
-				} else {
+					this.bulkDelete();
+				} else if (this.$store.state.isUpdating) {
+					this.checkThenUpdateEnter(this.$store.state.lapId);
+				}
+				{
 				}
 				if (this.$store.state.editing) {
 					this.$store.commit("toggleEdit");
@@ -129,6 +125,72 @@
 
 				setTimeout(() => this.$store.commit("toggleIsEditing"), 790);
 				this.$store.commit("clearErrors");
+			},
+
+			bulkDelete() {
+				this.$store.dispatch("bulkDelete");
+				this.$store.commit(
+					"setToastMsg",
+					`Deleted ${this.$store.state.selectedIds.length} Lap(s)`
+				);
+				this.$store.commit("toggleToast");
+				this.$store.dispatch("toastTimeout", 5000);
+				this.$store.commit("clearSelected");
+			},
+			checkThenUpdateEnter(id) {
+				debugger;
+				if (this.$store.state.checked) {
+					this.update(id);
+				} else {
+					this.check(id);
+				}
+			},
+			check(id) {
+				debugger;
+				if (
+					(this.$store.state.lapHour.length !== 2 &&
+						this.$store.state.lapMinute.length !== 2 &&
+						this.$store.state.lapSecond.length !== 2) ||
+					this.$store.state.lapHour === "" ||
+					this.$store.state.lapMinute === "" ||
+					this.$store.state.lapSecond == ""
+				) {
+					this.$store.commit("setErrors", {
+						error:
+							"Hours, Minutes, and Seconds must have two digits, and a value in all boxes is requred for update",
+					});
+				} else {
+					this.$store.commit("toggleChecked");
+					this.update(id);
+				}
+			},
+
+			update(id) {
+				debugger;
+				this.$store.dispatch("updateLap", {
+					lapId: id,
+				});
+				this.$store.commit("toggleChecked");
+				this.$store.commit("clearErrors");
+				this.inputHours = "";
+				this.inputMinutes = "";
+				this.inputSeconds = "";
+				this.$store.state.editing = false;
+
+				this.$store.commit("toggleIsUpdating");
+				this.$store.commit("setToastMsg", "Lap Updated");
+				this.$store.commit("toggleToast");
+				this.$store.dispatch("toastTimeout", 5000);
+			},
+			deleteOne(id, time) {
+				console.log(id);
+				this.$store.commit("toggleIsDeleting");
+				this.$store.dispatch("deleteOne", { lapId: id });
+
+				this.$store.commit("replaceLaps", { id: id, time: time });
+				this.$store.commit("setToastMsg", "Lap Deleted");
+				this.$store.commit("toggleToast");
+				this.$store.dispatch("toastTimeout", 5000);
 			},
 			stopBtn() {
 				this.$store.commit("clearTimeInterval");
@@ -152,6 +214,9 @@
 				"isEditing",
 				"toastTimeout",
 				"editing",
+				"lapHour",
+				"lapMinute",
+				"lapSecond",
 			]),
 
 			...mapGetters(["checkSeconds", "checkMinutes", "checkHours"]),
