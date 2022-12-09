@@ -364,9 +364,13 @@ export default createStore({
 				lapSecond: state.lapSecond,
 			};
 			try {
+				debugger;
 				await updateDoc(querySnapshot, {
 					lapTime,
 				});
+				commit("toggleIsEditing");
+				commit("toggleEditing");
+
 				commit("updateLaps", {
 					time: `${lapTime.lapHour}:${lapTime.lapMinute}:${lapTime.lapSecond}`,
 
@@ -375,9 +379,6 @@ export default createStore({
 				commit("setToastMsg", "Lap Updated");
 				commit("toggleToast");
 				dispatch("toastTimeout", 5000);
-
-				commit("toggleEditing");
-				commit("toggleIsEditing", 790);
 			} catch {}
 		},
 
