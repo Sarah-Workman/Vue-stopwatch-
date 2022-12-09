@@ -59,7 +59,7 @@ export default createStore({
 		bulkDeleteOn: false,
 		currentSelected: false,
 		isToasting: false,
-		checked: false,
+
 		isLoginFailed: false,
 		isDeleting: false,
 		fireBaseIds: [],
@@ -173,9 +173,9 @@ export default createStore({
 		toggleIsSelecting(state) {
 			state.isSelecting = !state.isSelecting;
 		},
-		toggleChecked(state) {
-			state.checked = !state.checked;
-		},
+		// toggleChecked(state) {
+		// 	state.checked = !state.checked;
+		// },
 		toggleEdit(state) {
 			state.editing = !state.editing;
 		},

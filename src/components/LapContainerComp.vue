@@ -94,6 +94,7 @@
 				"clearErrors",
 				"toggleIsDeleting",
 				"toggleEditing",
+				"toggleIsUpdating",
 			]),
 			...mapActions([
 				"getPlaceholder",
