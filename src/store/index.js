@@ -153,6 +153,9 @@ export default createStore({
 		toggleIsEditing(state) {
 			state.isEditing = !state.isEditing;
 		},
+		toggleEditing(state) {
+			state.editing = !state.editing;
+		},
 
 		toggleBulkDelete(state) {
 			state.bulkDeleteOn = !state.bulkDeleteOn;
@@ -346,7 +349,7 @@ export default createStore({
 			deleteDoc(doc(docRef, payload.lapId));
 		},
 
-		async updateLap({ state, commit }, payload) {
+		async updateLap({ state, commit, dispatch }, payload) {
 			const querySnapshot = doc(
 				db,
 				"Users",
@@ -364,12 +367,18 @@ export default createStore({
 				await updateDoc(querySnapshot, {
 					lapTime,
 				});
-			} catch {}
-			commit("updateLaps", {
-				time: `${lapTime.lapHour}:${lapTime.lapMinute}:${lapTime.lapSecond}`,
+				commit("updateLaps", {
+					time: `${lapTime.lapHour}:${lapTime.lapMinute}:${lapTime.lapSecond}`,
 
-				id: payload.lapId,
-			});
+					id: payload.lapId,
+				});
+				commit("setToastMsg", "Lap Updated");
+				commit("toggleToast");
+				dispatch("toastTimeout", 5000);
+
+				commit("toggleEditing");
+				commit("toggleIsEditing", 790);
+			} catch {}
 		},
 
 		async bulkDelete({ state, commit }) {

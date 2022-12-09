@@ -13,7 +13,7 @@
 				<ResetBtnComp @reset="resetBtn" />
 			</div>
 		</div>
-		<inputErrorComp />
+		<InputErrorComp />
 	</div>
 </template>
 <script>
@@ -22,7 +22,7 @@
 	import ResetBtnComp from "./ResetBtnComp.vue";
 	import LapBtnComp from "./LapBtnComp.vue";
 	import EditBtnComp from "./EditBtnComp.vue";
-	import inputErrorComp from "./InputErrorComp.vue";
+	import InputErrorComp from "./InputErrorComp.vue";
 	export default {
 		name: "RectangleComp",
 		components: {
@@ -30,7 +30,7 @@
 			LapBtnComp,
 			ResetBtnComp,
 			EditBtnComp,
-			inputErrorComp,
+			InputErrorComp,
 		},
 		methods: {
 			...mapActions([
@@ -122,15 +122,15 @@
 					this.bulkDelete();
 				} else if (this.$store.state.isUpdating) {
 					this.checkThenUpdateEnter(this.$store.state.lapId);
+				} else if (this.$store.state.editing) {
+					debugger;
+					this.$store.commit("toggleEdit");
+					// setTimeout(() =>
+					this.$store.commit("toggleIsEditing", 790);
+					this.$store.commit("clearErrors");
 				}
 				{
 				}
-				if (this.$store.state.editing) {
-					this.$store.commit("toggleEdit");
-				}
-
-				setTimeout(() => this.$store.commit("toggleIsEditing"), 790);
-				this.$store.commit("clearErrors");
 			},
 
 			bulkDelete() {
@@ -173,6 +173,7 @@
 
 			update(id) {
 				debugger;
+				this.$store.commit("toggleIsUpdating");
 				this.$store.dispatch("updateLap", {
 					lapId: id,
 				});
@@ -181,12 +182,10 @@
 				this.inputHours = "";
 				this.inputMinutes = "";
 				this.inputSeconds = "";
-				this.$store.state.editing = false;
 
-				this.$store.commit("toggleIsUpdating");
-				this.$store.commit("setToastMsg", "Lap Updated");
-				this.$store.commit("toggleToast");
-				this.$store.dispatch("toastTimeout", 5000);
+				// this.$store.commit("setToastMsg", "Lap Updated");
+				// this.$store.commit("toggleToast");
+				// this.$store.dispatch("toastTimeout", 5000);
 			},
 			deleteOne(id, time) {
 				console.log(id);

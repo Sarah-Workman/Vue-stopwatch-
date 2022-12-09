@@ -93,6 +93,7 @@
 				"setToastMsg",
 				"clearErrors",
 				"toggleIsDeleting",
+				"toggleEditing",
 			]),
 			...mapActions([
 				"getPlaceholder",
@@ -106,7 +107,7 @@
 
 			editOne(id) {
 				debugger;
-				this.$store.state.editing = true;
+				this.$store.commit("toggleEditing");
 
 				let lapToEdit = this.getLapById(id);
 
@@ -117,29 +118,20 @@
 			},
 			shareInput() {
 				debugger;
-				//so if I do an input event it could run this each time what I could run into if this happens is
-				// "" and if its blank a second time
-				// I just hate it having to run through it each input.. maybe I should do an v-for for the input?
+
 				this.$store.commit("setInputValues", {
 					lapHour: this.inputHours,
 					lapMinute: this.inputMinutes,
 					lapSecond: this.inputSeconds,
 				});
 
-				this.$store.dispatch("updateLap", {
-					lapId: id,
-				});
-				this.$store.commit("toggleChecked");
-				this.$store.commit("clearErrors");
-				this.inputHours = "";
-				this.inputMinutes = "";
-				this.inputSeconds = "";
-				this.$store.state.editing = false;
-
-				this.$store.commit("toggleIsUpdating");
-				this.$store.commit("setToastMsg", "Lap Updated");
-				this.$store.commit("toggleToast");
-				this.$store.dispatch("toastTimeout", 5000);
+				// this.$store.commit("toggleChecked");
+				// this.$store.commit("clearErrors");
+				// this.inputHours = "";
+				// this.inputMinutes = "";
+				// this.inputSeconds = "";
+				// this.$store.state.editing = false;
+				// this.$store.commit("toggleIsUpdating");
 			},
 			deleteOne(id, time) {
 				debugger;

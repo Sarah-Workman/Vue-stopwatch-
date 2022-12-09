@@ -10,7 +10,7 @@
 <script>
 	import { mapState } from "vuex";
 	export default {
-		name: "inputErrorComp",
+		name: "InputErrorComp",
 		computed: {
 			...mapState(["formErrors"]),
 		},
