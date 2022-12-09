@@ -6,12 +6,12 @@
 		</div>
 
 		<div class="stopwatch-wrapper">
-			<Rectangle class="Rectangle" />
+			<RectangleComp class="Rectangle" />
 		</div>
 
 		<div id="divider" :class="{ lapScroll: laps.length > 8 }">
 			<Suspense>
-				<LapContainer />
+				<LapContainerComp />
 				<template #fallback> Loading... </template>
 			</Suspense>
 		</div>
@@ -19,17 +19,17 @@
 </template>
 
 <script>
-	import Rectangle from "./Rectangle";
+	import RectangleComp from "./RectangleComp";
 
 	import { mapState } from "vuex";
 
-	import LapContainer from "./LapContainer.vue";
+	import LapContainerComp from "./LapContainerComp.vue";
 
 	export default {
 		name: "StopWatchWrapper",
 		components: {
-			Rectangle,
-			LapContainer,
+			RectangleComp,
+			LapContainerComp,
 		},
 		data() {
 			return {
