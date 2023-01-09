@@ -4,8 +4,6 @@
 
 The vision of the project was to expand on my knowledge base. I was able to get a feel for a real life project, by working with a designer and getting help when needed from my mentor. I got the opportunity to implement some awesome tools such as a state managment vuex, and a lighting fast database that really is a one stop shop for all backend needs.
 
-<video id="appPreview" height="500" width="500" autoplay><source src="previewVideo.mp4" type="video/mp4"></video>
-
 ## Issues
 
 **Issue # 1**<br> I ran into a problem trying to update my document. I needed the unique document ID attached somehow to my v-for as a unique id. That way when I was ready to delete or update it would make that process easier.
@@ -15,7 +13,9 @@ I was able to do that with some fancy getter magic that used the data it was get
 
 **Issue #2** <br>Another issue I ran into was getting user specific data. I didn't quite understand how the paths worked in firebase at first. Some steps I took was were placing my dispatch inside of my login to get data specific to user ID by passing the UID to my getData() action. I was able to set up a path after some research that grabbed only that user's laps.
 
-**Issue #3** Shortly after resolving issue #2 I ran into another issue with enrollment. How would I create collections specific to user? I was able to accomplish this by using setDoc which allows you to specify the document ID, and I passed the uid to that document ID so that I could set and find that users data. The structure of my firestore is shown in the image below.**(image pending)**
+**Issue #3** Shortly after resolving issue #2 I ran into another issue with enrollment. How would I create collections specific to user? I was able to accomplish this by using setDoc which allows you to specify the document ID, and I passed the uid to that document ID so that I could set and find that users data. The structure of my firestore is shown in the image below.
+
+<image src="structure.png" height="300px" width="800px"/>
 
 **Issue #3** <br>I could not pass an array to the deleteDoc method. I had considered using a for loop to pass this inromation on at a time to the function, but my mentore pointed out that it would cost me in performance. So instead of passing it one at a time I got creative, and saw that firebase offered cloud functions. Using a cloud function to instead of my own would not cost me in proformance. The cloud functions are written in javascript. They are callable on submit event.
 <br>
