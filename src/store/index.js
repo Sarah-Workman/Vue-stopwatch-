@@ -238,7 +238,6 @@ export default createStore({
 		},
 
 		setInputValues(state, payload) {
-			debugger;
 			state.lapHour = payload.lapHour;
 			state.lapMinute = payload.lapMinute;
 			state.lapSecond = payload.lapSecond;
@@ -252,7 +251,6 @@ export default createStore({
 			lap.time = payload.time;
 		},
 		replaceLaps(state, payload) {
-			debugger;
 			state.laps.splice(
 				state.laps.findIndex(
 					(object) => object.id == payload.id && object.time == payload.time
@@ -262,7 +260,6 @@ export default createStore({
 		},
 
 		setToastMsg(state, payload) {
-			debugger;
 			state.toast = payload;
 		},
 
@@ -270,7 +267,6 @@ export default createStore({
 			state.currentUser = payload;
 		},
 		setSelected(state, payload) {
-			debugger;
 			state.selectedObj.push(payload);
 			state.selectedIds.push(payload.id);
 		},
@@ -313,7 +309,9 @@ export default createStore({
 				});
 
 				commit("setDbId", response.id);
-			} catch {}
+			} catch (err) {
+				console.error(`Issue while adding a new lap: ${err}`);
+			}
 			//
 		},
 
@@ -340,13 +338,20 @@ export default createStore({
 						});
 						commit("setDbId", doc.id);
 					});
-				} catch {}
+				} catch (err) {
+					console.error(`Issue while retrieving data due to: ${err}`);
+				}
 			} //maybe a toaster to add data?
 		},
 		async deleteOne({ state }, payload) {
-			const docRef = collection(db, "Users", state.currentUser.uid, "Laps");
-
-			deleteDoc(doc(docRef, payload.lapId));
+			try {
+				const docRef = collection(db, "Users", state.currentUser.uid, "Laps");
+				deleteDoc(doc(docRef, payload.lapId));
+			} catch (err) {
+				console.error(
+					`Issue with individually deleteing ${payload.id} due to: ${err}`
+				);
+			}
 		},
 
 		async updateLap({ state, commit, dispatch }, payload) {
@@ -364,7 +369,6 @@ export default createStore({
 				lapSecond: state.lapSecond,
 			};
 			try {
-				debugger;
 				await updateDoc(querySnapshot, {
 					lapTime,
 				});
@@ -379,23 +383,28 @@ export default createStore({
 				commit("setToastMsg", "Lap Updated");
 				commit("toggleToast");
 				dispatch("toastTimeout", 5000);
-			} catch {}
+			} catch (err) {
+				console.error(`Issue while updating lap due to: ${err}`);
+			}
 		},
 
 		async bulkDelete({ state, commit }) {
-			debugger;
-			const functions = getFunctions();
-			const bulkDelete = httpsCallable(functions, "bulkDelete");
-			bulkDelete({
-				selectedArray: state.selectedIds,
-				uid: state.currentUser.uid,
-			});
-
-			for (let index = 0; index < state.selectedObj.length; index++) {
-				commit("replaceLaps", {
-					id: state.selectedObj[index].id,
-					time: state.selectedObj[index].time,
+			try {
+				const functions = getFunctions();
+				const bulkDelete = httpsCallable(functions, "bulkDelete");
+				bulkDelete({
+					selectedArray: state.selectedIds,
+					uid: state.currentUser.uid,
 				});
+
+				for (let index = 0; index < state.selectedObj.length; index++) {
+					commit("replaceLaps", {
+						id: state.selectedObj[index].id,
+						time: state.selectedObj[index].time,
+					});
+				}
+			} catch (err) {
+				console.error(`Issue with bulk deleting due to: ${err}`);
 			}
 		},
 
@@ -410,7 +419,9 @@ export default createStore({
 				try {
 					await setDoc(doc(db, "Users", user.uid), { email: user.email });
 					commit("setCurrentUser", user);
-				} catch {}
+				} catch (err) {
+					console.error(`Issue while trying to enroll due to: ${err}`);
+				}
 			});
 		},
 		async login({ commit, dispatch, state }, payload) {
@@ -429,8 +440,9 @@ export default createStore({
 						commit("toggleIsLoginFailed");
 					}
 				})
-				.catch((error) => {
+				.catch((err) => {
 					commit("toggleIsLoginFailed");
+					console.error(`Issue while logging in due to ${err}`);
 				});
 		},
 		async loginChange({ commit, dispatch }) {
@@ -461,7 +473,7 @@ export default createStore({
 				})
 				.catch((error) => {
 					//An error happened.
-					console.log("error on sign out");
+					console.error(`Issue while signing out due to: ${error}`);
 				});
 		},
 	},
