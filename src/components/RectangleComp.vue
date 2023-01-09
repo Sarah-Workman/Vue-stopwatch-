@@ -119,6 +119,7 @@
 			submitUpdateBulkDeleteBtnClick() {
 				if (this.$store.state.selectedIds.length > 0) {
 					this.bulkDelete();
+					this.$store.commit("toggleIsEditing");
 				} else if (this.$store.state.isUpdating) {
 					this.checkThenUpdate(this.$store.state.lapId);
 				} else if (this.$store.state.isEditing) {
